@@ -1,8 +1,9 @@
 import discord
 from discord.ext import commands
+from 花朝月夕_Token import Token
+#from 花朝月夕_command import cmd
 
 bot = commands.Bot(command_prefix='!', intents=discord.Intents.all(), help_command=None)
-TOKEN = 'MTM2NDM4MDc3OTk3ODY5MDc2MA.Gz49O5.wLhOmdYq3z0SueoIb_t9zaK9wbyZZa6flIX6SA'
 
 @bot.event
 async def on_ready():
@@ -22,11 +23,11 @@ async def on_message(msg):
     await bot.process_commands(msg)
 
 @bot.command()
-async def 명령어(ctx):
+async def 큐브(ctx):
     embed = discord.Embed(title='명령어',
                           description='명령어는 !를 통해 사용합니다.', 
                           colour=0xEB459E)
     embed.add_field(name='>니케', value='!니케이름 + 큐브\r\ex.!크라운 큐브')
     
     await ctx.channel.send(embed=embed)
-bot.run(TOKEN)
+bot.run(Token)
