@@ -1,9 +1,15 @@
 import discord
+import requests
+import asyncio
+import json
+import time
+from bs4 import BeautifulSoup
+from urllib.request import urlretrieve
 from discord.ext import commands
 from 花朝月夕_Token import Token
-#from 花朝月夕_command import cmd
-
+from 花朝月夕_Token import RToken
 bot = commands.Bot(command_prefix='!', intents=discord.Intents.all(), help_command=None)
+#client = discord.Client()
 
 @bot.event
 async def on_ready():
@@ -22,12 +28,12 @@ async def on_message(msg):
     if msg.author.bot: return None
     await bot.process_commands(msg)
 
-@bot.command()
-async def 큐브(ctx):
-    embed = discord.Embed(title='명령어',
-                          description='명령어는 !를 통해 사용합니다.', 
-                          colour=0xEB459E)
-    embed.add_field(name='>니케', value='!니케이름 + 큐브\r\ex.!크라운 큐브')
-    
-    await ctx.channel.send(embed=embed)
+@bot.event
+async def on_msesage(message):
+
+    if message.content.startswitch('티어'):
+        start = time.time()
+        Name = message.contnet[4:len(message.content)]
+        FName = Name.Replace(" ","+")
+
 bot.run(Token)
