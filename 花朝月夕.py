@@ -8,8 +8,8 @@ from urllib.request import urlretrieve
 from discord.ext import commands
 from 花朝月夕_Token import Token
 from 花朝月夕_Token import RToken
+
 bot = commands.Bot(command_prefix='!', intents=discord.Intents.all(), help_command=None)
-#client = discord.Client()
 
 @bot.event
 async def on_ready():
@@ -29,11 +29,10 @@ async def on_message(msg):
     await bot.process_commands(msg)
 
 @bot.event
-async def on_msesage(message):
+async def on_message(msg):
+    if message.content.startswith('전적검색'):
+        Ntg = ' '.join(args)
+        URL_puuid = 'https://asia.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{/KR33?api_key='+RToken
 
-    if message.content.startswitch('티어'):
-        start = time.time()
-        Name = message.contnet[4:len(message.content)]
-        FName = Name.Replace(" ","+")
-
-bot.run(Token)
+        
+bot.run(Token) 
