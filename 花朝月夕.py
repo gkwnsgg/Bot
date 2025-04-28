@@ -11,11 +11,12 @@ from 花朝月夕_Token import RToken
 
 bot = commands.Bot(command_prefix='!', intents=discord.Intents.all(), help_command=None)
 
+
 @bot.event
 async def on_ready():
     await bot.change_presence(status=discord.Status.dnd)
     await bot.change_presence(activity=discord.Game(name='패치'))
-    print('花朝月夕 enabled.')
+print('花朝月夕 enabled.')
 
 @bot.event
 async def on_disconnect():
@@ -23,16 +24,12 @@ async def on_disconnect():
     await bot.change_presence(activity=discord.Game(name='충전'))
     print('花朝月夕 disabled.')
 
-@bot.event
-async def on_message(msg):
-    if msg.author.bot: return None
-    await bot.process_commands(msg)
+headers_lol = {"X-Riot-Token":RToken}
+Name_lol = ' '
+Tag_lol = ' ' 
+URL_puuid = "https://assia.api.riotgames.com/riot/account/v1/account/by-riot-id/"+Name_lol/+Tag_lol+'api_key=+RToken'
 
-@bot.event
-async def on_message(msg):
-    if message.content.startswith('전적검색'):
-        Ntg = ' '.join(args)
-        URL_puuid = 'https://asia.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{/KR33?api_key='+RToken
-
-        
-bot.run(Token) 
+print(URL_puuid)
+#class match():
+#    def __init__(self,game_duration,game_creaction,game_Mode,player):
+#        self.duration=str(datetime.timedelta(seconds=game_duration))
