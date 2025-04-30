@@ -23,6 +23,12 @@ async def on_ready():
 async def slash1(interaction: discord.Interaction, 닉네임:str, 태그:str):
     URL_puuid = f"https://asia.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{닉네임}/{태그}?api_key={RToken}"
     r = requests.get(URL_puuid,headers=headers_lol)
-    print(r.json()['puuid'])
-    await interaction.response.send_message(r.json()['puuid'])
+    Puuid = (r.json()['puuid'])
+    print(Puuid)
+    print(r.status_code)
+    if r.status_code == 200:
+        URL_league = f"https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/{Puuid}?api_key={RToken}"
+        Player_Info = requests.get(URL_league, headers=headers_lol).json
+        print(Player_Info)
+    #await interaction.response.send_message(r.json()['puuid'])
 bot.run(Token) 
