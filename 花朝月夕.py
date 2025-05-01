@@ -69,12 +69,12 @@ async def slash1(interaction: discord.Interaction, 닉네임:str, 태그:str):
                          if(champion_name["data"][i]["key"])==str(most_champion_id):
                              most_champion_name = champion_name["data"][i]["name"]
                              break
-                     print(most_champion_name)
-                     print(most_champion_points)
+                     #print(most_champion_name)
+                     #print(most_champion_points)
 
                      embed = discord.Embed(title="", description="", color=0xEB459F)
-                     embed.set_author(name=닉네임) +"님의 전적 검색", URL_GG=f"https://lol.ps/summoner/{닉네임}_{태그}", URL_icon="https://ddragon.leagueoflegends.com/cdn/15.9.1/img/profileicon/"Icon"+.png"
-                     embed.add_field(name=tier+" "+rank+" | "+leaguepoints+" LP", vlaue=wins+"승"+" "+losses +"패"+" | "+ratio+"%", inline=False)
+                     embed.set_author(name=닉네임 +"님의 전적 검색", url=f"https://lol.ps/summoner/{닉네임}_{태그}?region=kr", icon_url="https://ddragon.leagueoflegends.com/cdn/15.9.1/img/profileicon/"+Icon+".png")
+                     embed.add_field(name=tier+" "+rank+" | "+leaguepoints+" LP", value=wins+"승"+" "+losses +"패"+" | "+ratio+"%", inline=False)
                      embed.add_field(name="가장 높은 숙련도",value= most_champion_name +" "+ most_champion_points +" 점", inline=False)
                      embed.set_footer(text='Gkwns_GG')
                      await interaction.response.send_message(embed=embed)
@@ -83,4 +83,4 @@ async def slash1(interaction: discord.Interaction, 닉네임:str, 태그:str):
          await interaction.response.send_message("소환사가 존재하지 않습니다.")
 
                                                 
-bot.run(Token) 
+bot.run(Token)
