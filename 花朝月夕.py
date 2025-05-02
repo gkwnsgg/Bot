@@ -14,12 +14,12 @@ headers_lol = {"X-Riot-Token":RToken}
 @bot.event
 async def on_ready():
     await bot.change_presence(status=discord.Status.dnd)
-    await bot.change_presence(activity=discord.Game(name='패치'))
+    await bot.change_presence(activity=discord.Game(name='업데이트'))
     await bot.wait_until_ready()
     await bot.tree.sync()
     print('花朝月夕 enabled.')
 
-@bot.tree.command(name="전적검색", description="닉네임과 태그를 정확하게 입력해주세요.")
+@bot.tree.command(name="랭크", description="닉네임과 태그를 정확하게 입력해주세요.")
 async def slash1(interaction: discord.Interaction, 닉네임:str, 태그:str):
      URL_puuid = f"https://asia.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{닉네임}/{태그}?api_key={RToken}"
      r = requests.get(URL_puuid,headers=headers_lol)
@@ -73,14 +73,13 @@ async def slash1(interaction: discord.Interaction, 닉네임:str, 태그:str):
                      #print(most_champion_points)
 
                      embed = discord.Embed(title="", description="", color=0xEB459F)
-                     embed.set_author(name=닉네임 +"님의 전적 검색", url=f"https://lol.ps/summoner/{닉네임}_{태그}?region=kr", icon_url="https://ddragon.leagueoflegends.com/cdn/15.9.1/img/profileicon/"+Icon+".png")
+                     embed.set_author(name=닉네임 +"님의 랭크 정보", url=f"https://lol.ps/summoner/{닉네임}_{태그}?region=kr", icon_url="https://ddragon.leagueoflegends.com/cdn/15.9.1/img/profileicon/"+Icon+".png")
                      embed.add_field(name=tier+" "+rank+" | "+leaguepoints+" LP", value=wins+"승"+" "+losses +"패"+" | "+ratio+"%", inline=False)
-                     embed.add_field(name="가장 높은 숙련도",value= most_champion_name +" "+ most_champion_points +" 점", inline=False)
-                     embed.set_footer(text='Gkwns_GG')
+                     embed.add_field(name="최고 숙련도",value= most_champion_name +" "+ most_champion_points +" 점", inline=False)
+                     embed.set_footer(text='lol.ps')
                      await interaction.response.send_message(embed=embed)
                      break
      else:
          await interaction.response.send_message("소환사가 존재하지 않습니다.")
 
-                                                
 bot.run(Token)
