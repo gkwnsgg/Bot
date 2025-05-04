@@ -1,25 +1,12 @@
-LOGFILE="/home/ubuntu/Bot/gitlog.txt"
-cd /home/ubuntu/Bot || exit 1   # 저장소 경로로 이동
+#!/bin/bash
+cd /home/ubuntu/Bot
 
-# 타임스탬프 표시
-echo "========== $(date '+%Y-%m-%d %H:%M:%S') ==========" >> "$LOGFILE"
-# Git 사용자 정보 기록
-echo "Git user: $(git config user.name) <$(git config user.email)>" >> "$LOGFILE"
+TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S")
+echo "[$TIMESTAMP] Git 자동 커밋 실행 중..." >> gitlog.txt
 
-# 변경사항이 있으면 커밋 및 푸시
-if git diff-index --quiet HEAD --; then
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] No changes to commit." >> "$LOGFILE"
-else
-    git add . >> "$LOGFILE" 2>&1
-    COMMIT_MSG="Auto commit on $(date '+%Y-%m-%d %H:%M:%S')"
-    if git commit -m "$COMMIT_MSG" >> "$LOGFILE" 2>&1; then
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Commit succeeded: \"$COMMIT_MSG\"" >> "$LOGFILE"
-        if git push origin main >> "$LOGFILE" 2>&1; then
-            echo "[$(date '+%Y-%m-%d %H:%M:%S')] Push succeeded." >> "$LOGFILE"
-        else
-            echo "[$(date '+%Y-%m-%d %H:%M:%S')] Push FAILED." >> "$LOGFILE"
-        fi
-    else
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Commit FAILED or no changes." >> "$LOGFILE"
-    fi
-fi
+git pull origin main --rebase >> gitlog.txt 2>&1
+git add subs.json >> gitlog.txt 2>&1
+git commit -m "자동 커밋: $TIMESTAMP" >> gitlog.txt 2>&1
+git push origin main >> gitlog.txt 2>&1
+
+echo "[$TIMESTAMP] Git 자동 커밋 완료" >> gitlog.txt
