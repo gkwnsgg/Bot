@@ -1,8 +1,9 @@
 import discord
 import requests
 import asyncio
-import json
 import time
+import aiohttp
+import json
 from bs4 import BeautifulSoup
 from urllib.request import urlretrieve
 from discord import app_commands
@@ -13,8 +14,9 @@ from 花朝月夕_Subscribers import save_subscribers, load_subscribers
 bot = commands.Bot(command_prefix='!', intents=discord.Intents.all())
 headers_lol = {"X-Riot-Token":RToken}
 headers_chzzk = {'User-Agent': 'Mozilla/5.0'}
-SahYang_User = '5f800579267362c952f76f3c6fe695b2'
+SahYang_User = '0de024a1ca4a64f1a23a95ff9eeee5a5'#5f800579267362c952f76f3c6fe695b2'
 URL_SahYang = f"https://api.chzzk.naver.com/service/v1/channels/{SahYang_User}"
+URL_SahYang_ = f"https://api.chzzk.naver.com/polling/v3/channels/{SahYang_User}/live-status?includePlayerRecommendContent=true"
 subscribers_users = set()
 
 @bot.event
@@ -114,23 +116,44 @@ async def slash3(interaction: discord.Interaction):
 async def checking():
     await bot.wait_until_ready()
     last_check = 0
-    while not bot.is_closed():
-        try:
-            r = requests.get(URL_SahYang, headers=headers_chzzk)
-            check = 1 if r.json()['content']['openLive'] else 0
-        except Exception as e:
-            print(f"API 오류: {e}")
-            await asyncio.sleep(10)
-            continue
-        if check != last_check and check == 1:
-            for user_id in subscribers_users:
-                user = await bot.fetch_user(user_id)
-                try:
-                    await user.send("금사향님의 방송이 시작됐습니다.")
-                except Exception as e:
-                    print(f"{user_id} DM 실패: {e}")
-        last_check = check
-        await asyncio.sleep(3)
+    async with aiohttp.ClientSession(headers=headers_chzzk) as session:
+        while not bot.is_closed():
+            try:
+                async with session.get(URL_SahYang) as resp:
+                    data = await resp.json()
+                content = data.get("content", {})
+                check = 1 if content.get("openLive") else 0
+            
+                if check != last_check:
+                    if check == 1:
+                        try:
+                            async with session.get(URL_SahYang_) as resp:
+                                data = await resp.json()
+                                Title = data.get('content', {}).get('liveTitle', '제목 없음')
+                                live_url = f"https://chzzk.naver.com/live/{SahYang_User}"
+                            embed = discord.Embed(
+                                title="금사향님의 방송이 시작됐습니다.",
+                                description=f"**{Title}**\n[방송 보러가기]({live_url})",
+                                color=discord.Color.yellow()
+                            )
+                            embed.set_footer(text="花朝月夕")
+                            embed.timestamp = discord.utils.utcnow()
+                            for user_id in subscribers_users:
+                                try:
+                                    user_obj = await bot.fetch_user(user_id)
+                                    await user_obj.send(embed=embed)
+                                except Exception as e:
+                                    print(f"{user_id} DM 실패: {e}")
+                        except Exception as e:
+                            print(f"Embed 오류: {e}")
+                    else:
+                        print("방송 종료")                    
+                    
+                    
+                    last_check = check
+            except Exception as e:
+                print(f"API 오류: {e}")
+            await asyncio.sleep(30)
 
 
 bot.run(Token)
