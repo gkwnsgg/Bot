@@ -14,7 +14,7 @@ from 花朝月夕_Subscribers import save_subscribers, load_subscribers
 bot = commands.Bot(command_prefix='!', intents=discord.Intents.all())
 headers_lol = {"X-Riot-Token":RToken}
 headers_chzzk = {'User-Agent': 'Mozilla/5.0'}
-SahYang_User = '0de024a1ca4a64f1a23a95ff9eeee5a5'#5f800579267362c952f76f3c6fe695b2'
+SahYang_User = '5f800579267362c952f76f3c6fe695b2'
 URL_SahYang = f"https://api.chzzk.naver.com/service/v1/channels/{SahYang_User}"
 URL_SahYang_ = f"https://api.chzzk.naver.com/polling/v3/channels/{SahYang_User}/live-status?includePlayerRecommendContent=true"
 subscribers_users = set()
