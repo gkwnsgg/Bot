@@ -8,16 +8,30 @@ from urllib.request import urlretrieve
 from discord import app_commands
 from discord.ext import commands
 from 花朝月夕_Token import Token, RToken
+from 花朝月夕_Subscribers import save_subscribers, load_subscribers
 
 bot = commands.Bot(command_prefix='!', intents=discord.Intents.all())
 headers_lol = {"X-Riot-Token":RToken}
+headers_chzzk = {'User-Agent': 'Mozilla/5.0'}
+SahYang_User = '5f800579267362c952f76f3c6fe695b2'
+URL_SahYang = f"https://api.chzzk.naver.com/service/v1/channels/{SahYang_User}"
+subscribers_users = set()
+
 @bot.event
 async def on_ready():
     await bot.change_presence(status=discord.Status.dnd)
     await bot.change_presence(activity=discord.Game(name='업데이트'))
     await bot.wait_until_ready()
     await bot.tree.sync()
-    print('花朝月夕 enabled.')
+    global subscribers_users
+    subscribers_users = load_subscribers()
+    print(f'花朝月夕 enabled. Subscribers: {len(subscribers_users)}')
+    bot.loop.create_task(checking())
+                
+@bot.tree.command(name="채널", description="전용 채팅 채널을 생성합니다.")
+async def slash(interaction: discord.Interaction):
+    await interaction.guild.create_text_channel(name="花朝月夕")
+    await interaction.response.send_message("채널을 생성했습니다.", ephemeral=True)
 
 @bot.tree.command(name="랭크", description="닉네임과 태그를 정확하게 입력해주세요.")
 async def slash1(interaction: discord.Interaction, 닉네임:str, 태그:str):
@@ -81,5 +95,42 @@ async def slash1(interaction: discord.Interaction, 닉네임:str, 태그:str):
                      break
      else:
          await interaction.response.send_message("소환사가 존재하지 않습니다.")
+
+@bot.tree.command(name="방송_알림_활성화", description="방송 알림을 메시지로 받아요.")
+async def slash2(interaction: discord.Interaction):
+    subscribers_users.add(interaction.user.id)
+    save_subscribers(subscribers_users)
+    await interaction.response.send_message("방송 알림을 활성화했습니다.", ephemeral=True)
+
+@bot.tree.command(name="방송_알림_비활성화", description="방송 알림을 메시지로 받지 않아요.")
+async def slash3(interaction: discord.Interaction):
+    if interaction.user.id in subscribers_users:
+        subscribers_users.remove(interaction.user.id)
+        save_subscribers(subscribers_users)
+        await interaction.response.send_message("방송 알림을 비활성화했습니다.", ephemeral=True)
+    else:
+        await interaction.response.send_message("방송 알림이 활성화되어있지 않습니다.", ephemeral=True)
+
+async def checking():
+    await bot.wait_until_ready()
+    last_check = 0
+    while not bot.is_closed():
+        try:
+            r = requests.get(URL_SahYang, headers=headers_chzzk)
+            check = 1 if r.json()['content']['openLive'] else 0
+        except Exception as e:
+            print(f"API 오류: {e}")
+            await asyncio.sleep(10)
+            continue
+        if check != last_check and check == 1:
+            for user_id in subscribers_users:
+                user = await bot.fetch_user(user_id)
+                try:
+                    await user.send("금사향님의 방송이 시작됐습니다.")
+                except Exception as e:
+                    print(f"{user_id} DM 실패: {e}")
+        last_check = check
+        await asyncio.sleep(3)
+
 
 bot.run(Token)
