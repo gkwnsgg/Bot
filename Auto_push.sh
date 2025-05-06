@@ -11,7 +11,7 @@ if ! git diff --quiet; then
     echo "[$TIMESTAMP] 변경 사항 감지됨" >> gitlog.txt
     echo "[$TIMESTAMP] 변경된 내용:" >> gitlog.txt
     git diff >> gitlog.txt
-    git add subs.json >> gitlog.txt 2>&1
+    git add subs.json gitlog.txt >> gitlog.txt 2>&1
     git commit -m "자동 커밋: $TIMESTAMP" >> gitlog.txt 2>&1
     git push origin main >> gitlog.txt 2>&1
     echo "[$TIMESTAMP] 변경 사항 없음" >> gitlog.txt
