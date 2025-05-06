@@ -103,7 +103,7 @@ async def slash2(interaction: discord.Interaction):
     await interaction.response.defer(ephemeral=True)
     subscribers_users.add(interaction.user.id)
     save_subscribers(subscribers_users)
-    await interaction.response.send_message("방송 알림을 활성화했습니다.", ephemeral=True)
+    await interaction.followup.send("방송 알림을 활성화했습니다.", ephemeral=True)
 
 @bot.tree.command(name="방송_알림_비활성화", description="방송 알림을 메시지로 받지 않아요.")
 async def slash3(interaction: discord.Interaction):
@@ -111,11 +111,9 @@ async def slash3(interaction: discord.Interaction):
     if interaction.user.id in subscribers_users:
         subscribers_users.remove(interaction.user.id)
         save_subscribers(subscribers_users)
-        if not interaction.response.is_done():
-            await interaction.response.send_message("방송 알림을 비활성화했습니다.", ephemeral=True)
-        return
+        await interaction.followup.send("방송 알림을 비활성화했습니다.", ephemeral=True)
     else:
-        await interaction.response.send_message("방송 알림이 활성화되어있지 않습니다.", ephemeral=True)
+        await interaction.followup.send("방송 알림이 활성화되어있지 않습니다.", ephemeral=True)
 
 async def checking():
     await bot.wait_until_ready()
