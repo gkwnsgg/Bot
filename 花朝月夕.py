@@ -112,6 +112,7 @@ async def slash3(interaction: discord.Interaction):
         subscribers_users.remove(interaction.user.id)
         save_subscribers(subscribers_users)
         await interaction.response.send_message("방송 알림을 비활성화했습니다.", ephemeral=True)
+        return
     else:
         await interaction.response.send_message("방송 알림이 활성화되어있지 않습니다.", ephemeral=True)
 
