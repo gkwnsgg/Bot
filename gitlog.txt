@@ -489,3 +489,11 @@ index 03bf1de..0786d06 100644
 +error: please commit or stash them.
 +[2025-05-06 09:50:01] 변경 사항 감지됨
 +[2025-05-06 09:50:01] 변경된 내용:
+[main 4259f35] 자동 커밋: 2025-05-06 09:50:01
+ 1 file changed, 36 insertions(+)
+git@github.com: Permission denied (publickey).
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[2025-05-06 09:50:01] 변경 사항 없음
