@@ -100,12 +100,14 @@ async def slash1(interaction: discord.Interaction, 닉네임:str, 태그:str):
 
 @bot.tree.command(name="방송_알림_활성화", description="방송 알림을 메시지로 받아요.")
 async def slash2(interaction: discord.Interaction):
+    await interaction.response.defer(ephemeral=True)
     subscribers_users.add(interaction.user.id)
     save_subscribers(subscribers_users)
     await interaction.response.send_message("방송 알림을 활성화했습니다.", ephemeral=True)
 
 @bot.tree.command(name="방송_알림_비활성화", description="방송 알림을 메시지로 받지 않아요.")
 async def slash3(interaction: discord.Interaction):
+    await interaction.response.defer(ephemeral=True)
     if interaction.user.id in subscribers_users:
         subscribers_users.remove(interaction.user.id)
         save_subscribers(subscribers_users)
