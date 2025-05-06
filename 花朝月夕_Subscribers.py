@@ -14,7 +14,7 @@ def log_user_action(user_ids, action):
 
 def save_subscribers(user_id_list, changed_ids=None, action=None):
     with open(FILE_PATH, 'w', encoding='utf-8') as f:
-        json.dump(list(user_id_list), f, ensure_ascii==False, indent=2)
+        json.dump(list(user_id_list), f, ensure_ascii=False, indent=2)
     if changed_ids and action:
         log_user_action(changed_ids, action)
     try:
