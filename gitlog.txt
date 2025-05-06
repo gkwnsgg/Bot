@@ -188,3 +188,248 @@ fatal: Could not read from remote repository.
 Please make sure you have the correct access rights
 and the repository exists.
 [2025-05-06 09:00:01] 변경 사항 없음
+[2025-05-06 09:10:01] Git 자동 커밋 실행 중...
+[2025-05-06 09:10:01] git pull origin main --rebase 실행
+error: cannot pull with rebase: You have unstaged changes.
+error: please commit or stash them.
+[2025-05-06 09:10:01] 변경 사항 감지됨
+[2025-05-06 09:10:01] 변경된 내용:
+diff --git a/gitlog.txt b/gitlog.txt
+index af254d4..f967db3 100644
+--- a/gitlog.txt
++++ b/gitlog.txt
+@@ -188,3 +188,9 @@ fatal: Could not read from remote repository.
+ Please make sure you have the correct access rights
+ and the repository exists.
+ [2025-05-06 09:00:01] 변경 사항 없음
++[2025-05-06 09:10:01] Git 자동 커밋 실행 중...
++[2025-05-06 09:10:01] git pull origin main --rebase 실행
++error: cannot pull with rebase: You have unstaged changes.
++error: please commit or stash them.
++[2025-05-06 09:10:01] 변경 사항 감지됨
++[2025-05-06 09:10:01] 변경된 내용:
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   gitlog.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
+git@github.com: Permission denied (publickey).
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[2025-05-06 09:10:01] 변경 사항 없음
+[2025-05-06 09:20:01] Git 자동 커밋 실행 중...
+[2025-05-06 09:20:01] git pull origin main --rebase 실행
+error: cannot pull with rebase: You have unstaged changes.
+error: please commit or stash them.
+[2025-05-06 09:20:01] 변경 사항 감지됨
+[2025-05-06 09:20:01] 변경된 내용:
+diff --git a/gitlog.txt b/gitlog.txt
+index af254d4..5c4ff6e 100644
+--- a/gitlog.txt
++++ b/gitlog.txt
+@@ -188,3 +188,44 @@ fatal: Could not read from remote repository.
+ Please make sure you have the correct access rights
+ and the repository exists.
+ [2025-05-06 09:00:01] 변경 사항 없음
++[2025-05-06 09:10:01] Git 자동 커밋 실행 중...
++[2025-05-06 09:10:01] git pull origin main --rebase 실행
++error: cannot pull with rebase: You have unstaged changes.
++error: please commit or stash them.
++[2025-05-06 09:10:01] 변경 사항 감지됨
++[2025-05-06 09:10:01] 변경된 내용:
++diff --git a/gitlog.txt b/gitlog.txt
++index af254d4..f967db3 100644
++--- a/gitlog.txt
+++++ b/gitlog.txt
++@@ -188,3 +188,9 @@ fatal: Could not read from remote repository.
++ Please make sure you have the correct access rights
++ and the repository exists.
++ [2025-05-06 09:00:01] 변경 사항 없음
+++[2025-05-06 09:10:01] Git 자동 커밋 실행 중...
+++[2025-05-06 09:10:01] git pull origin main --rebase 실행
+++error: cannot pull with rebase: You have unstaged changes.
+++error: please commit or stash them.
+++[2025-05-06 09:10:01] 변경 사항 감지됨
+++[2025-05-06 09:10:01] 변경된 내용:
++On branch main
++Your branch is up to date with 'origin/main'.
++
++Changes not staged for commit:
++  (use "git add <file>..." to update what will be committed)
++  (use "git restore <file>..." to discard changes in working directory)
++	modified:   gitlog.txt
++
++no changes added to commit (use "git add" and/or "git commit -a")
++git@github.com: Permission denied (publickey).
++fatal: Could not read from remote repository.
++
++Please make sure you have the correct access rights
++and the repository exists.
++[2025-05-06 09:10:01] 변경 사항 없음
++[2025-05-06 09:20:01] Git 자동 커밋 실행 중...
++[2025-05-06 09:20:01] git pull origin main --rebase 실행
++error: cannot pull with rebase: You have unstaged changes.
++error: please commit or stash them.
++[2025-05-06 09:20:01] 변경 사항 감지됨
++[2025-05-06 09:20:01] 변경된 내용:
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   gitlog.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
+git@github.com: Permission denied (publickey).
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[2025-05-06 09:20:01] 변경 사항 없음
+[2025-05-06 09:30:01] Git 자동 커밋 실행 중...
+[2025-05-06 09:30:01] git pull origin main --rebase 실행
+error: cannot pull with rebase: You have unstaged changes.
+error: please commit or stash them.
+[2025-05-06 09:30:01] 변경 사항 감지됨
+[2025-05-06 09:30:01] 변경된 내용:
+diff --git a/gitlog.txt b/gitlog.txt
+index af254d4..1947a2e 100644
+--- a/gitlog.txt
++++ b/gitlog.txt
+@@ -188,3 +188,114 @@ fatal: Could not read from remote repository.
+ Please make sure you have the correct access rights
+ and the repository exists.
+ [2025-05-06 09:00:01] 변경 사항 없음
++[2025-05-06 09:10:01] Git 자동 커밋 실행 중...
++[2025-05-06 09:10:01] git pull origin main --rebase 실행
++error: cannot pull with rebase: You have unstaged changes.
++error: please commit or stash them.
++[2025-05-06 09:10:01] 변경 사항 감지됨
++[2025-05-06 09:10:01] 변경된 내용:
++diff --git a/gitlog.txt b/gitlog.txt
++index af254d4..f967db3 100644
++--- a/gitlog.txt
+++++ b/gitlog.txt
++@@ -188,3 +188,9 @@ fatal: Could not read from remote repository.
++ Please make sure you have the correct access rights
++ and the repository exists.
++ [2025-05-06 09:00:01] 변경 사항 없음
+++[2025-05-06 09:10:01] Git 자동 커밋 실행 중...
+++[2025-05-06 09:10:01] git pull origin main --rebase 실행
+++error: cannot pull with rebase: You have unstaged changes.
+++error: please commit or stash them.
+++[2025-05-06 09:10:01] 변경 사항 감지됨
+++[2025-05-06 09:10:01] 변경된 내용:
++On branch main
++Your branch is up to date with 'origin/main'.
++
++Changes not staged for commit:
++  (use "git add <file>..." to update what will be committed)
++  (use "git restore <file>..." to discard changes in working directory)
++	modified:   gitlog.txt
++
++no changes added to commit (use "git add" and/or "git commit -a")
++git@github.com: Permission denied (publickey).
++fatal: Could not read from remote repository.
++
++Please make sure you have the correct access rights
++and the repository exists.
++[2025-05-06 09:10:01] 변경 사항 없음
++[2025-05-06 09:20:01] Git 자동 커밋 실행 중...
++[2025-05-06 09:20:01] git pull origin main --rebase 실행
++error: cannot pull with rebase: You have unstaged changes.
++error: please commit or stash them.
++[2025-05-06 09:20:01] 변경 사항 감지됨
++[2025-05-06 09:20:01] 변경된 내용:
++diff --git a/gitlog.txt b/gitlog.txt
++index af254d4..5c4ff6e 100644
++--- a/gitlog.txt
+++++ b/gitlog.txt
++@@ -188,3 +188,44 @@ fatal: Could not read from remote repository.
++ Please make sure you have the correct access rights
++ and the repository exists.
++ [2025-05-06 09:00:01] 변경 사항 없음
+++[2025-05-06 09:10:01] Git 자동 커밋 실행 중...
+++[2025-05-06 09:10:01] git pull origin main --rebase 실행
+++error: cannot pull with rebase: You have unstaged changes.
+++error: please commit or stash them.
+++[2025-05-06 09:10:01] 변경 사항 감지됨
+++[2025-05-06 09:10:01] 변경된 내용:
+++diff --git a/gitlog.txt b/gitlog.txt
+++index af254d4..f967db3 100644
+++--- a/gitlog.txt
++++++ b/gitlog.txt
+++@@ -188,3 +188,9 @@ fatal: Could not read from remote repository.
+++ Please make sure you have the correct access rights
+++ and the repository exists.
+++ [2025-05-06 09:00:01] 변경 사항 없음
++++[2025-05-06 09:10:01] Git 자동 커밋 실행 중...
++++[2025-05-06 09:10:01] git pull origin main --rebase 실행
++++error: cannot pull with rebase: You have unstaged changes.
++++error: please commit or stash them.
++++[2025-05-06 09:10:01] 변경 사항 감지됨
++++[2025-05-06 09:10:01] 변경된 내용:
+++On branch main
+++Your branch is up to date with 'origin/main'.
+++
+++Changes not staged for commit:
+++  (use "git add <file>..." to update what will be committed)
+++  (use "git restore <file>..." to discard changes in working directory)
+++	modified:   gitlog.txt
+++
+++no changes added to commit (use "git add" and/or "git commit -a")
+++git@github.com: Permission denied (publickey).
+++fatal: Could not read from remote repository.
+++
+++Please make sure you have the correct access rights
+++and the repository exists.
+++[2025-05-06 09:10:01] 변경 사항 없음
+++[2025-05-06 09:20:01] Git 자동 커밋 실행 중...
+++[2025-05-06 09:20:01] git pull origin main --rebase 실행
+++error: cannot pull with rebase: You have unstaged changes.
+++error: please commit or stash them.
+++[2025-05-06 09:20:01] 변경 사항 감지됨
+++[2025-05-06 09:20:01] 변경된 내용:
++On branch main
++Your branch is up to date with 'origin/main'.
++
++Changes not staged for commit:
++  (use "git add <file>..." to update what will be committed)
++  (use "git restore <file>..." to discard changes in working directory)
++	modified:   gitlog.txt
++
++no changes added to commit (use "git add" and/or "git commit -a")
++git@github.com: Permission denied (publickey).
++fatal: Could not read from remote repository.
++
++Please make sure you have the correct access rights
++and the repository exists.
++[2025-05-06 09:20:01] 변경 사항 없음
++[2025-05-06 09:30:01] Git 자동 커밋 실행 중...
++[2025-05-06 09:30:01] git pull origin main --rebase 실행
++error: cannot pull with rebase: You have unstaged changes.
++error: please commit or stash them.
++[2025-05-06 09:30:01] 변경 사항 감지됨
++[2025-05-06 09:30:01] 변경된 내용:
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   gitlog.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
+git@github.com: Permission denied (publickey).
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[2025-05-06 09:30:01] 변경 사항 없음
