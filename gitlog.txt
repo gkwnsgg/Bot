@@ -505,3 +505,15 @@ error: please commit or stash them.
 [2025-05-06 10:10:01] git pull origin main --rebase 실행
 error: cannot pull with rebase: You have unstaged changes.
 error: please commit or stash them.
+[2025-05-06 10:20:01] Git 자동 커밋 실행 중...
+[2025-05-06 10:20:01] git pull origin main --rebase 실행
+error: cannot pull with rebase: You have unstaged changes.
+error: please commit or stash them.
+[2025-05-06 10:30:01] Git 자동 커밋 실행 중...
+[2025-05-06 10:30:01] git pull origin main --rebase 실행
+error: cannot pull with rebase: You have unstaged changes.
+error: please commit or stash them.
+[2025-05-06 10:40:01] Git 자동 커밋 실행 중...
+[2025-05-06 10:40:01] git pull origin main --rebase 실행
+error: cannot pull with rebase: You have unstaged changes.
+error: please commit or stash them.
