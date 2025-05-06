@@ -13,3 +13,37 @@ Untracked files:
 nothing added to commit but untracked files present (use "git add" to track)
 Everything up-to-date
 [2025-05-05 06:19:20] 변경 사항 없음
+[2025-05-06 08:30:02] Git 자동 커밋 실행 중...
+[2025-05-06 08:30:02] git pull origin main --rebase 실행
+error: cannot pull with rebase: You have unstaged changes.
+error: please commit or stash them.
+[2025-05-06 08:30:02] 변경 사항 감지됨
+[2025-05-06 08:30:02] 변경된 내용:
+diff --git a/gitlog.txt b/gitlog.txt
+index 910143a..9a08ac9 100644
+--- a/gitlog.txt
++++ b/gitlog.txt
+@@ -13,3 +13,9 @@ Untracked files:
+ nothing added to commit but untracked files present (use "git add" to track)
+ Everything up-to-date
+ [2025-05-05 06:19:20] 변경 사항 없음
++[2025-05-06 08:30:02] Git 자동 커밋 실행 중...
++[2025-05-06 08:30:02] git pull origin main --rebase 실행
++error: cannot pull with rebase: You have unstaged changes.
++error: please commit or stash them.
++[2025-05-06 08:30:02] 변경 사항 감지됨
++[2025-05-06 08:30:02] 변경된 내용:
+diff --git a/subs.json b/subs.json
+index e69de29..a6b68ae 100644
+--- a/subs.json
++++ b/subs.json
+@@ -0,0 +1 @@
++[341943508686471168, 335976770446819339]
+[main 7d76384] 자동 커밋: 2025-05-06 08:30:02
+ 1 file changed, 1 insertion(+)
+git@github.com: Permission denied (publickey).
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+[2025-05-06 08:30:02] 변경 사항 없음
