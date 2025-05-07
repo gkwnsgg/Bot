@@ -38,7 +38,7 @@ async def 패치노트(ctx):
         description="Notion으로 이동합니다.",
         color=discord.Color.dark_red()
     )
-    embed.add_field(name="Notion으로 이동합니다.", inline=False, value=["Notion"](URL_Notion))
+    embed.add_field(name="Notion으로 이동합니다.", value="[Notion](URL_Notion)", inline=False)
     embed.set_footer(text="花朝月夕")
     embed.timestamp = discord.utils.utcnow()
     await ctx.send(embed=embed)
