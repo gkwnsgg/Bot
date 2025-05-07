@@ -35,12 +35,12 @@ async def on_ready():
 async def 패치노트(ctx):
     embed = discord.Embed(
         title="패치 노트",
-        description="Notion으로 이동합니다.",
+        description="[Notion으로 이동합니다.]", url=(URL_Notion),
         color=discord.Color.dark_red()
     )
-    embed.add_field(name="Notion으로 이동합니다.", value=["Notion"](URL_Notion), inline=False)
-    embed.set_footer(text="花朝月夕")
-    embed.timestamp = discord.utils.utcnow()
+#    embed.add_field(name="Notion으로 이동합니다.", value=["Notion"](URL_Notion), inline=False)
+#    embed.set_footer(text="花朝月夕")
+#    embed.timestamp = discord.utils.utcnow()
     await ctx.send(embed=embed)
 
 @bot.tree.command(name="채널", description="전용 채팅 채널을 생성합니다.")
