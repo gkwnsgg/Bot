@@ -17,6 +17,7 @@ headers_chzzk = {'User-Agent': 'Mozilla/5.0'}
 SahYang_User = '5f800579267362c952f76f3c6fe695b2'
 URL_SahYang = f"https://api.chzzk.naver.com/service/v1/channels/{SahYang_User}"
 URL_SahYang_ = f"https://api.chzzk.naver.com/polling/v3/channels/{SahYang_User}/live-status?includePlayerRecommendContent=true"
+URL_Notion = f"https://www.notion.so/1ec12ee7d80780d2a991e30acb657904?v=1ec12ee7d807802bb555000c57b6ad64&pvs=4"
 subscribers_users = set()
 
 @bot.event
@@ -29,7 +30,18 @@ async def on_ready():
     subscribers_users = load_subscribers()
     print(f'花朝月夕 enabled. Subscribers: {len(subscribers_users)}')
     bot.loop.create_task(checking())
-                
+
+@bot.command()
+async def 패치노트(ctx):
+    embed = discord.Embed(
+        title="패치 노트",
+        description="Notion으로 이동합니다.",
+        color=discord.Color.dark_red()
+    )
+    embed.add_field(name="Notion으로 이동합니다.", inline=False, value=["Notion"](URL_Notion))
+    embed.set_footer(text="花朝月夕")
+    embed.timestamp = discord.utils.utcnow()
+
 @bot.tree.command(name="채널", description="전용 채팅 채널을 생성합니다.")
 async def slash(interaction: discord.Interaction):
     await interaction.guild.create_text_channel(name="花朝月夕")
