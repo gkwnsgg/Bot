@@ -41,6 +41,7 @@ async def 패치노트(ctx):
     embed.add_field(name="Notion으로 이동합니다.", inline=False, value=["Notion"](URL_Notion))
     embed.set_footer(text="花朝月夕")
     embed.timestamp = discord.utils.utcnow()
+    await ctx.send(embed=embed)
 
 @bot.tree.command(name="채널", description="전용 채팅 채널을 생성합니다.")
 async def slash(interaction: discord.Interaction):
