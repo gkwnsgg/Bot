@@ -8,16 +8,13 @@ from bs4 import BeautifulSoup
 from urllib.request import urlretrieve
 from discord import app_commands
 from discord.ext import commands
-from 花朝月夕_Token import Token, RToken
+from 花朝月夕_Token import Token, RToken, SahYang_User
 from 花朝月夕_Subscribers import save_subscribers, load_subscribers
+from 花朝月夕_URL import URL_SahYang, URL_SahYang0, URL_Notion
 
 bot = commands.Bot(command_prefix='!', intents=discord.Intents.all())
 headers_lol = {"X-Riot-Token":RToken}
 headers_chzzk = {'User-Agent': 'Mozilla/5.0'}
-SahYang_User = '5f800579267362c952f76f3c6fe695b2'
-URL_SahYang = f"https://api.chzzk.naver.com/service/v1/channels/{SahYang_User}"
-URL_SahYang_ = f"https://api.chzzk.naver.com/polling/v3/channels/{SahYang_User}/live-status?includePlayerRecommendContent=true"
-URL_Notion = f"https://www.notion.so/1ec12ee7d80780d2a991e30acb657904?v=1ec12ee7d807802bb555000c57b6ad64&pvs=4"
 subscribers_users = set()
 
 @bot.event
@@ -38,9 +35,6 @@ async def 패치노트(ctx):
         description="[Notion으로 이동합니다.]", url=(URL_Notion),
         color=discord.Color.dark_red()
     )
-#    embed.add_field(name="Notion으로 이동합니다.", value=["Notion"](URL_Notion), inline=False)
-#    embed.set_footer(text="花朝月夕")
-#    embed.timestamp = discord.utils.utcnow()
     await ctx.send(embed=embed)
 
 @bot.tree.command(name="채널", description="전용 채팅 채널을 생성합니다.")
@@ -142,7 +136,7 @@ async def checking():
                 if check != last_check:
                     if check == 1:
                         try:
-                            async with session.get(URL_SahYang_) as resp:
+                            async with session.get(URL_SahYang0) as resp:
                                 data = await resp.json()
                                 Title = data.get('content', {}).get('liveTitle', '제목 없음')
                                 live_url = f"https://chzzk.naver.com/live/{SahYang_User}"
