@@ -1,5 +1,5 @@
 #!/bin/bash
-cd /home/oihope13/Bot || exit 1
+cd /home/oihope13/Bot
 
 TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S")
 echo "[$TIMESTAMP] Git 자동 커밋 실행 중..." >> gitlog.txt
