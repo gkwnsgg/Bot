@@ -121,8 +121,9 @@ async def slash3(interaction: discord.Interaction):
         await interaction.followup.send("방송 알림을 비활성화했습니다.", ephemeral=True)
     else:
         await interaction.followup.send("방송 알림이 활성화되어있지 않습니다.", ephemeral=True)
-
+last_check = 0
 async def checking():
+    global last_check
     await bot.wait_until_ready()
     last_check = 0
     async with aiohttp.ClientSession(headers=headers_chzzk) as session:
