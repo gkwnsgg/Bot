@@ -160,7 +160,7 @@ async def slash5(interaction: discord.Interaction):
     await interaction.response.defer(ephemeral=True)
     if interaction.user.id in z_subscribers_users:
         z_subscribers_users.remove(interaction.user.id)
-        save_cz_subcribers(Ssubscribers_users)
+        save_cz_subcribers(z_subscribers_users)
         await interaction.followup.send("방송 알림을 비활성화했습니다.", ephemeral=True)
     else:
         await interaction.followup.send("방송 알림이 활성화되어있지 않습니다.", ephemeral=True)
