@@ -9,13 +9,13 @@ from urllib.request import urlretrieve
 from discord import app_commands
 from discord.ext import commands
 from 花朝月夕_Token import Token, RToken, SahYang_User
-from 花朝月夕_Subscribers import save_subcribers, load_subcribers
+from 花朝月夕_Subscribers import save_Ssubcribers, load_Ssubcribers
 from 花朝月夕_URL import URL_SahYang, URL_SahYang0, URL_Notion
 
 bot = commands.Bot(command_prefix='!', intents=discord.Intents.all())
 headers_lol = {"X-Riot-Token":RToken}
 headers_chzzk = {'User-Agent': 'Mozilla/5.0'}
-subscribers_users = set()
+Ssubscribers_users = set()
 
 @bot.event
 async def on_ready():
@@ -23,10 +23,10 @@ async def on_ready():
     await bot.change_presence(activity=discord.Game(name='업데이트'))
     await bot.wait_until_ready()
     await bot.tree.sync()
-    global subscribers_users
-    subscribers_users = load_subcribers()
-    print(f'花朝月夕 enabled. Subscribers: {len(subscribers_users)}')
-    bot.loop.create_task(checking())
+    global Ssubscribers_users
+    Ssubscribers_users = load_Ssubcribers()
+    print(f'花朝月夕 enabled.')
+    bot.loop.create_task(checking_Sahyang())
 
 @bot.command()
 async def 패치노트(ctx):
@@ -105,24 +105,24 @@ async def slash1(interaction: discord.Interaction, 닉네임:str, 태그:str):
      else:
          await interaction.response.send_message("소환사가 존재하지 않습니다.")
 
-@bot.tree.command(name="방송_알림_활성화", description="방송 알림을 메시지로 받아요.")
+@bot.tree.command(name="금사향_방송_알림_활성화", description="방송 알림을 메시지로 받아요.")
 async def slash2(interaction: discord.Interaction):
     await interaction.response.defer(ephemeral=True)
-    subscribers_users.add(interaction.user.id)
-    save_subcribers(subscribers_users)
+    Ssubscribers_users.add(interaction.user.id)
+    save_Ssubcribers(Ssubscribers_users)
     await interaction.followup.send("방송 알림을 활성화했습니다.", ephemeral=True)
 
-@bot.tree.command(name="방송_알림_비활성화", description="방송 알림을 메시지로 받지 않아요.")
+@bot.tree.command(name="금사향_방송_알림_비활성화", description="방송 알림을 메시지로 받지 않아요.")
 async def slash3(interaction: discord.Interaction):
     await interaction.response.defer(ephemeral=True)
-    if interaction.user.id in subscribers_users:
-        subscribers_users.remove(interaction.user.id)
-        save_subcribers(subscribers_users)
+    if interaction.user.id in Ssubscribers_users:
+        Ssubscribers_users.remove(interaction.user.id)
+        save_Ssubcribers(Ssubscribers_users)
         await interaction.followup.send("방송 알림을 비활성화했습니다.", ephemeral=True)
     else:
         await interaction.followup.send("방송 알림이 활성화되어있지 않습니다.", ephemeral=True)
 last_check = 0
-async def checking():
+async def checking_Sahyang():
     global last_check
     await bot.wait_until_ready()
     last_check = 0
@@ -148,7 +148,7 @@ async def checking():
                             )
                             embed.set_footer(text="花朝月夕")
                             embed.timestamp = discord.utils.utcnow()
-                            for user_id in subscribers_users:
+                            for user_id in Ssubscribers_users:
                                 try:
                                     user_obj = await bot.fetch_user(user_id)
                                     await user_obj.send(embed=embed)
