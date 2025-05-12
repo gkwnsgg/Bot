@@ -8,14 +8,19 @@ from bs4 import BeautifulSoup
 from urllib.request import urlretrieve
 from discord import app_commands
 from discord.ext import commands
-from 花朝月夕_Token import Token, RToken, SahYang_User
-from 花朝月夕_Subscribers import save_Ssubcribers, load_Ssubcribers
-from 花朝月夕_URL import URL_SahYang, URL_SahYang0, URL_Notion
+from 花朝月夕_Token import Token, RToken, SahYang_User, chyeonz_User, leechunhyang_User, ao_o5_User
+from 花朝月夕_Subscribers import save_Ssubcribers, load_Ssubcribers, save_CHsubcribers, load_CHsubcribers, save_cz_subcribers, load_cz_subcribers, save_ao_subcribers, load_ao_subcribers
+from 花朝月夕_URL import URL_SahYang, URL_SahYang0, URL_leechunhyang, URL_leechunhyang0, URL_chyeonz_, URL_chyeonz0, URL_ao_05, URL_ao_050, URL_Notion
 
 bot = commands.Bot(command_prefix='!', intents=discord.Intents.all())
 headers_lol = {"X-Riot-Token":RToken}
 headers_chzzk = {'User-Agent': 'Mozilla/5.0'}
 Ssubscribers_users = set()
+
+SahYang_task_started = False
+leechunhyang_task_started = False
+chyeonz_task_started = False
+ao_o5_task_started = False
 
 @bot.event
 async def on_ready():
@@ -24,9 +29,30 @@ async def on_ready():
     await bot.wait_until_ready()
     await bot.tree.sync()
     global Ssubscribers_users
+    global Csubscribers_users
+    global z_subscribers_users
+    global ao_subcribers_users
     Ssubscribers_users = load_Ssubcribers()
+    Csubscribers_users = load_CHsubcribers()
+    z_subscribers_users = load_cz_subcribers()
+    ao_subcribers_users = load_ao_subcribers()
     print(f'花朝月夕 enabled.')
-    bot.loop.create_task(checking_Sahyang())
+    global SahYang_task_started
+    if not SahYang_task_started:
+        bot.loop.create_task(checking_SahYang())
+        SahYang_task_started = True
+    global leechunhyang_task_started
+    if not leechunhyang_task_started:
+        bot.loop.create_task(checking_leechunhyang())
+        leechunhyang_task_started = True
+    global chyeonz_task_started
+    if not chyeonz_task_started:
+        bot.loop.create_task(checking_chyeonz_())
+        chyeonz_task_started = True
+    global ao_o5_task_started
+    if not ao_o5_task_started:
+        bot.loop.create_task(checking_ao_o5())
+        ao_o5_task_started = True
 
 @bot.command()
 async def 패치노트(ctx):
@@ -121,10 +147,63 @@ async def slash3(interaction: discord.Interaction):
         await interaction.followup.send("방송 알림을 비활성화했습니다.", ephemeral=True)
     else:
         await interaction.followup.send("방송 알림이 활성화되어있지 않습니다.", ephemeral=True)
-last_check = 0
-async def checking_Sahyang():
-    global last_check
+
+@bot.tree.command(name="채현찌_방송_알림_활성화", description="방송 알림을 메시지로 받아요.")
+async def slash4(interaction: discord.Interaction):
+    await interaction.response.defer(ephemeral=True)
+    z_subscribers_users.add(interaction.user.id)
+    save_cz_subcribers(z_subscribers_users)
+    await interaction.followup.send("방송 알림을 활성화했습니다.", ephemeral=True)
+
+@bot.tree.command(name="채현찌_방송_알림_비활성화", description="방송 알림을 메시지로 받지 않아요.")
+async def slash5(interaction: discord.Interaction):
+    await interaction.response.defer(ephemeral=True)
+    if interaction.user.id in z_subscribers_users:
+        z_subscribers_users.remove(interaction.user.id)
+        save_cz_subcribers(Ssubscribers_users)
+        await interaction.followup.send("방송 알림을 비활성화했습니다.", ephemeral=True)
+    else:
+        await interaction.followup.send("방송 알림이 활성화되어있지 않습니다.", ephemeral=True)
+
+@bot.tree.command(name="이춘향_방송_알림_활성화", description="방송 알림을 메시지로 받아요.")
+async def slash6(interaction: discord.Interaction):
+    await interaction.response.defer(ephemeral=True)
+    Csubscribers_users.add(interaction.user.id)
+    save_CHsubcribers(Csubscribers_users)
+    await interaction.followup.send("방송 알림을 활성화했습니다.", ephemeral=True)
+
+@bot.tree.command(name="이춘향_방송_알림_비활성화", description="방송 알림을 메시지로 받지 않아요.")
+async def slash7(interaction: discord.Interaction):
+    await interaction.response.defer(ephemeral=True)
+    if interaction.user.id in Csubscribers_users:
+        Csubscribers_users.remove(interaction.user.id)
+        save_CHsubcribers(Csubscribers_users)
+        await interaction.followup.send("방송 알림을 비활성화했습니다.", ephemeral=True)
+    else:
+        await interaction.followup.send("방송 알림이 활성화되어있지 않습니다.", ephemeral=True)
+
+@bot.tree.command(name="임나은_방송_알림_활성화", description="방송 알림을 메시지로 받아요.")
+async def slash8(interaction: discord.Interaction):
+    await interaction.response.defer(ephemeral=True)
+    ao_subcribers_users.add(interaction.user.id)
+    save_ao_subcribers(ao_subcribers_users)
+    await interaction.followup.send("방송 알림을 활성화했습니다.", ephemeral=True)
+
+@bot.tree.command(name="임나은_방송_알림_비활성화", description="방송 알림을 메시지로 받지 않아요.")
+async def slash7(interaction: discord.Interaction):
+    await interaction.response.defer(ephemeral=True)
+    if interaction.user.id in ao_subcribers_users:
+        ao_subcribers_users.remove(interaction.user.id)
+        save_ao_subcribers(ao_subcribers_users)
+        await interaction.followup.send("방송 알림을 비활성화했습니다.", ephemeral=True)
+    else:
+        await interaction.followup.send("방송 알림이 활성화되어있지 않습니다.", ephemeral=True)
+
+last_check_SahYang = 0
+async def checking_SahYang():
+    global last_check_SahYang
     await bot.wait_until_ready()
+    last_check_SahYang = 0
     async with aiohttp.ClientSession(headers=headers_chzzk) as session:
         while not bot.is_closed():
             try:
@@ -133,7 +212,7 @@ async def checking_Sahyang():
                 content = data.get("content", {})
                 check = 1 if content.get("openLive") else 0
             
-                if check != last_check:
+                if check != last_check_SahYang:
                     if check == 1:
                         try:
                             async with session.get(URL_SahYang0) as resp:
@@ -156,13 +235,144 @@ async def checking_Sahyang():
                         except Exception as e:
                             print(f"Embed 오류: {e}")
                     else:
-                        print("방송 종료")                    
+                        pass                    
                     
                     
-                    last_check = check
+                    last_check_SahYang = check
             except Exception as e:
                 print(f"API 오류: {e}")
             await asyncio.sleep(30)
 
+last_check_leechunhyang = 0
+async def checking_leechunhyang():
+    global last_check_leechunhyang
+    await bot.wait_until_ready()
+    last_check_leechunhyang = 0
+    async with aiohttp.ClientSession(headers=headers_chzzk) as session:
+        while not bot.is_closed():
+            try:
+                async with session.get(URL_leechunhyang) as resp:
+                    data = await resp.json()
+                content = data.get("content", {})
+                check = 1 if content.get("openLive") else 0
+            
+                if check != last_check_leechunhyang:
+                    if check == 1:
+                        try:
+                            async with session.get(URL_leechunhyang0) as resp:
+                                data = await resp.json()
+                                Title = data.get('content', {}).get('liveTitle', '제목 없음')
+                                live_url = f"https://chzzk.naver.com/live/{leechunhyang_User}"
+                            embed = discord.Embed(
+                                title="이춘향님의 방송이 시작됐습니다.",
+                                description=f"**{Title}**\n[방송 보러가기]({live_url})",
+                                color=discord.Color.yellow()
+                            )
+                            embed.set_footer(text="花朝月夕")
+                            embed.timestamp = discord.utils.utcnow()
+                            for user_id in Csubscribers_users:
+                                try:
+                                    user_obj = await bot.fetch_user(user_id)
+                                    await user_obj.send(embed=embed)
+                                except Exception as e:
+                                    print(f"{user_id} DM 실패: {e}")
+                        except Exception as e:
+                            print(f"Embed 오류: {e}")
+                    else:
+                        pass                    
+                    
+                    
+                    last_check_leechunhyang = check
+            except Exception as e:
+                print(f"API 오류: {e}")
+            await asyncio.sleep(30)
+
+last_check_chyeonz_ = 0
+async def checking_chyeonz_():
+    global last_check_chyeonz_
+    await bot.wait_until_ready()
+    last_check_chyeonz_ = 0
+    async with aiohttp.ClientSession(headers=headers_chzzk) as session:
+        while not bot.is_closed():
+            try:
+                async with session.get(URL_chyeonz_) as resp:
+                    data = await resp.json()
+                content = data.get("content", {})
+                check = 1 if content.get("openLive") else 0
+            
+                if check != last_check_chyeonz_:
+                    if check == 1:
+                        try:
+                            async with session.get(URL_chyeonz0) as resp:
+                                data = await resp.json()
+                                Title = data.get('content', {}).get('liveTitle', '제목 없음')
+                                live_url = f"https://chzzk.naver.com/live/{chyeonz_User}"
+                            embed = discord.Embed(
+                                title="채현찌님의 방송이 시작됐습니다.",
+                                description=f"**{Title}**\n[방송 보러가기]({live_url})",
+                                color=discord.Color.yellow()
+                            )
+                            embed.set_footer(text="花朝月夕")
+                            embed.timestamp = discord.utils.utcnow()
+                            for user_id in z_subscribers_users:
+                                try:
+                                    user_obj = await bot.fetch_user(user_id)
+                                    await user_obj.send(embed=embed)
+                                except Exception as e:
+                                    print(f"{user_id} DM 실패: {e}")
+                        except Exception as e:
+                            print(f"Embed 오류: {e}")
+                    else:
+                        pass                    
+                    
+                    
+                    last_check_chyeonz_ = check
+            except Exception as e:
+                print(f"API 오류: {e}")
+            await asyncio.sleep(30)
+
+last_check_ao_o5 = 0
+async def checking_ao_o5():
+    global last_check_ao_o5
+    await bot.wait_until_ready()
+    last_check_ao_o5 = 0
+    async with aiohttp.ClientSession(headers=headers_chzzk) as session:
+        while not bot.is_closed():
+            try:
+                async with session.get(URL_ao_05) as resp:
+                    data = await resp.json()
+                content = data.get("content", {})
+                check = 1 if content.get("openLive") else 0
+            
+                if check != last_check_chyeonz_:
+                    if check == 1:
+                        try:
+                            async with session.get(URL_ao_050) as resp:
+                                data = await resp.json()
+                                Title = data.get('content', {}).get('liveTitle', '제목 없음')
+                                live_url = f"https://chzzk.naver.com/live/{ao_o5_User}"
+                            embed = discord.Embed(
+                                title="임나은님의 방송이 시작됐습니다.",
+                                description=f"**{Title}**\n[방송 보러가기]({live_url})",
+                                color=discord.Color.yellow()
+                            )
+                            embed.set_footer(text="花朝月夕")
+                            embed.timestamp = discord.utils.utcnow()
+                            for user_id in ao_subcribers_users:
+                                try:
+                                    user_obj = await bot.fetch_user(user_id)
+                                    await user_obj.send(embed=embed)
+                                except Exception as e:
+                                    print(f"{user_id} DM 실패: {e}")
+                        except Exception as e:
+                            print(f"Embed 오류: {e}")
+                    else:
+                        pass                    
+                    
+                    
+                    last_check_ao_o5 = check
+            except Exception as e:
+                print(f"API 오류: {e}")
+            await asyncio.sleep(30)
 
 bot.run(Token)
