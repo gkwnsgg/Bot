@@ -125,7 +125,6 @@ last_check = 0
 async def checking_Sahyang():
     global last_check
     await bot.wait_until_ready()
-    last_check = 0
     async with aiohttp.ClientSession(headers=headers_chzzk) as session:
         while not bot.is_closed():
             try:
