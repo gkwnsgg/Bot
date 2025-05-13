@@ -230,6 +230,7 @@ async def checking_SahYang():
                                 try:
                                     user_obj = await bot.fetch_user(user_id)
                                     await user_obj.send(embed=embed)
+                                    await asyncio.sleep(0.5)
                                 except Exception as e:
                                     print(f"{user_id} DM 실패: {e}")
                         except Exception as e:
@@ -274,6 +275,7 @@ async def checking_leechunhyang():
                                 try:
                                     user_obj = await bot.fetch_user(user_id)
                                     await user_obj.send(embed=embed)
+                                    await asyncio.sleep(0.5)
                                 except Exception as e:
                                     print(f"{user_id} DM 실패: {e}")
                         except Exception as e:
@@ -318,6 +320,7 @@ async def checking_chyeonz_():
                                 try:
                                     user_obj = await bot.fetch_user(user_id)
                                     await user_obj.send(embed=embed)
+                                    await asyncio.sleep(0.5)
                                 except Exception as e:
                                     print(f"{user_id} DM 실패: {e}")
                         except Exception as e:
@@ -344,7 +347,7 @@ async def checking_ao_o5():
                 content = data.get("content", {})
                 check = 1 if content.get("openLive") else 0
             
-                if check != last_check_chyeonz_:
+                if check != last_check_ao_o5:
                     if check == 1:
                         try:
                             async with session.get(URL_ao_050) as resp:
@@ -362,6 +365,7 @@ async def checking_ao_o5():
                                 try:
                                     user_obj = await bot.fetch_user(user_id)
                                     await user_obj.send(embed=embed)
+                                    await asyncio.sleep(0.5)
                                 except Exception as e:
                                     print(f"{user_id} DM 실패: {e}")
                         except Exception as e:
