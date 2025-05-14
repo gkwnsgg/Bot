@@ -1,5 +1,10 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
+
+font_path = "GodoM.otf"
+fontprop = fm.FontProperties(fname=font_path)
+plt.rcParams['font.Family'] = fontprop.get_name()
 
 def save_sah_df_img(df, filename="2506.png", background_image="1747197564.219887.PNG"):
     fig, ax = plt.subplots(figsize=(10, len(df) * 0.5 + 2))
