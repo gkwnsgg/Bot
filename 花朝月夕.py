@@ -9,7 +9,8 @@ from urllib.request import urlretrieve
 from discord import app_commands
 from discord.ext import commands
 from tabulate import tabulate
-from Sah_Yang_Schedule import sah_df_
+from Sah_Yang_Schedule import Sah_filtered_dataframe
+from Sah_Yang_image import save_sah_df_img
 from 花朝月夕_Token import Token, RToken, SahYang_User, chyeonz_User, leechunhyang_User, ao_o5_User
 from 花朝月夕_Subscribers import save_Ssubcribers, load_Ssubcribers, save_CHsubcribers, load_CHsubcribers, save_cz_subcribers, load_cz_subcribers, save_ao_subcribers, load_ao_subcribers
 from 花朝月夕_URL import URL_SahYang, URL_SahYang0, URL_leechunhyang, URL_leechunhyang0, URL_chyeonz_, URL_chyeonz0, URL_ao_05, URL_ao_050, URL_Notion
@@ -201,10 +202,11 @@ async def slash7(interaction: discord.Interaction):
     else:
         await interaction.followup.send("방송 알림이 활성화되어있지 않습니다.", ephemeral=True)
 
-@bot.tree.command(name="금사향_방송_일정", description="방송 일정을 알려줄게요.")
+@bot.tree.command(name="금사향_방송_일정", description="이번달의 방송 일정을 알려줄게요.")
 async def slash8(interaction: discord.Integration):
-    
-
+    df = Sah_filtered_dataframe()
+    save_sah_df_img(df, filename="2505schedule.png", background_image="1747197564.219887.PNG")
+    await interaction.response.send_message(file+File("2505schedule.png"))
 
 last_check_SahYang = 0
 async def checking_SahYang():
