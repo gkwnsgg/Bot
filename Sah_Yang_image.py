@@ -1,21 +1,41 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
+import textwrap
 
-font_path = "GodoM.otf"
+font_path = "./GodoM.ttf"
 fontprop = fm.FontProperties(fname=font_path)
-plt.rcParams['font.Family'] = fontprop.get_name()
+plt.rcParams['axes.unicode_minus'] = False
+
+def auto_wrap_text(text, max_line_length=18):
+    if not isinstance(text, str):
+        return text
+    return '\n'.join(textwrap.wrap(text, width=max_line_length))
+def wrap_text_in_df(df, max_line_length=18):
+    return df.applymap(lambda x: auto_wrap_text(x, max_line_length))
 
 def save_sah_df_img(df, filename="2506.png", background_image="1747197564.219887.PNG"):
-    fig, ax = plt.subplots(figsize=(10, len(df) * 0.5 + 2))
+    df = wrap_text_in_df(df, max_line_length=18)
+    fig_width = 16
+    fig_height = 4
+    fig, ax = plt.subplots(figsize=(fig_width, fig_height))
     ax.axis('off')
     table = ax.table(cellText=df.values, colLabels=df.columns, loc='center', cellLoc='center', colColours=["#d3d3d3"] * df.shape[1])
     table.auto_set_font_size(False)
-    table.set_fontsize(12)
-    table.scale(1, 1.5)
+    table.set_fontsize(9)
+    table.scale(1.2, 0.8)
+    for (row, col), cell in table.get_celld().items():
+        cell.get_text().set_fontproperties(fontprop)
+        cell.PAD = 0.01
+        if row == 0:
+#            text = cell.get_text().get_text()
+#            line_count = text.count('\n') + 1
+            cell.set_height(0.18)
+        else:
+            cell.set_height(0.15)
     if background_image:
         img = plt.imread(background_image)
-        fig.figimage(img, xo=0, yo=0, alpha=0.2, zorder=1)
+        fig.figimage(img, xo=0, yo=0, alpha=0.15, zorder=1)
     plt.tight_layout()
-    plt.savefig(filename, dpi=300)
+    plt.savefig(filename, dpi=300, bbox_inches='tight')
     plt.close()

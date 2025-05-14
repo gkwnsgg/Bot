@@ -21,7 +21,7 @@ def Sah_filtered_dataframe():
     sah_df.replace("", pd.NA, inplace=True)
     sah_df.dropna(how='all', inplace=True)
     sah_df.dropna(axis=1, how='all', inplace=True)
-    sah_df_ = sah_df[~(sah_df[2].isna() & sah_df[3].isna())]
+    sah_df_ = sah_df[~(sah_df[2].isna() & sah_df[3].isna())].copy()
     sah_df_.fillna("시간 미정", inplace=True)
     sah_df_.columns = sah_df_.iloc[0]
     sah_df_ = sah_df_[1:].reset_index(drop=True)
