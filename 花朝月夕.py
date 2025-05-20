@@ -13,7 +13,7 @@ from Sah_Yang_image import save_sah_df_img
 from Sah_Yang_Schedule import Sah_filtered_dataframe
 from 花朝月夕_Token import Token, RToken, SahYang_User, chyeonz_User, leechunhyang_User, ao_o5_User
 from 花朝月夕_Subscribers import save_Ssubcribers, load_Ssubcribers, save_CHsubcribers, load_CHsubcribers, save_cz_subcribers, load_cz_subcribers, save_ao_subcribers, load_ao_subcribers
-from 花朝月夕_URL import URL_SahYang, URL_SahYang0, URL_leechunhyang, URL_leechunhyang0, URL_chyeonz_, URL_chyeonz0, URL_ao_05, URL_ao_050, URL_Notion
+from 花朝月夕_URL import URL_SahYang, URL_SahYang0, URL_leechunhyang, URL_leechunhyang0, URL_chyeonz_, URL_chyeonz0, URL_ao_05, URL_ao_050, URL_Notion, URL_Notion1
 
 bot = commands.Bot(command_prefix='!', intents=discord.Intents.all())
 headers_lol = {"X-Riot-Token":RToken}
@@ -25,10 +25,33 @@ leechunhyang_task_started = False
 chyeonz_task_started = False
 ao_o5_task_started = False
 
+def get_status_message(bot):
+    server_count = len(bot.guilds)
+
+    subs_files = [
+        'ao_o5.subs.json',
+        'chyeonz_.subs.json',
+        'leechunhyang.subs.json',
+        'Sah_Yang_subs.json'
+    ]
+
+    user_ids = set()
+    for file_name in subs_files:
+        try:
+            with open(file_name, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                user_ids.update(data)
+        except Exception as e:
+            print(f"{file_name} 읽기 중 오류 발생: {e}")
+
+    user_count = len(user_ids)
+    return f"{server_count}개의 서버에서 {user_count}명의 유저가 사용중"
+
 @bot.event
 async def on_ready():
-    await bot.change_presence(status=discord.Status.dnd)
-    await bot.change_presence(activity=discord.Game(name='업데이트'))
+    await bot.change_presence(status=discord.Status.online)
+    status_message = get_status_message(bot)
+    await bot.change_presence(activity=discord.CustomActivity(name=status_message))
     await bot.wait_until_ready()
     await bot.tree.sync()
     global Ssubscribers_users
@@ -62,6 +85,15 @@ async def 패치노트(ctx):
     embed = discord.Embed(
         title="패치 노트",
         description="[Notion으로 이동합니다.]", url=(URL_Notion),
+        color=discord.Color.dark_red()
+    )
+    await ctx.send(embed=embed)
+
+@bot.command()
+async def 정보(ctx):
+    embed = discord.Embed(
+        title="정보",
+        description="[Notion으로 이동합니다.]", url=(URL_Notion1),
         color=discord.Color.dark_red()
     )
     await ctx.send(embed=embed)
@@ -240,7 +272,7 @@ async def checking_SahYang():
                                 try:
                                     user_obj = await bot.fetch_user(user_id)
                                     await user_obj.send(embed=embed)
-                                    await asyncio.sleep(0.5)
+                                    await asyncio.sleep(1)
                                 except Exception as e:
                                     print(f"{user_id} DM 실패: {e}")
                         except Exception as e:
@@ -285,7 +317,7 @@ async def checking_leechunhyang():
                                 try:
                                     user_obj = await bot.fetch_user(user_id)
                                     await user_obj.send(embed=embed)
-                                    await asyncio.sleep(0.5)
+                                    await asyncio.sleep(1)
                                 except Exception as e:
                                     print(f"{user_id} DM 실패: {e}")
                         except Exception as e:
@@ -330,7 +362,7 @@ async def checking_chyeonz_():
                                 try:
                                     user_obj = await bot.fetch_user(user_id)
                                     await user_obj.send(embed=embed)
-                                    await asyncio.sleep(0.5)
+                                    await asyncio.sleep(1)
                                 except Exception as e:
                                     print(f"{user_id} DM 실패: {e}")
                         except Exception as e:
@@ -375,7 +407,7 @@ async def checking_ao_o5():
                                 try:
                                     user_obj = await bot.fetch_user(user_id)
                                     await user_obj.send(embed=embed)
-                                    await asyncio.sleep(0.5)
+                                    await asyncio.sleep(1)
                                 except Exception as e:
                                     print(f"{user_id} DM 실패: {e}")
                         except Exception as e:
