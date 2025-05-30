@@ -48,3 +48,15 @@ def load_ao_subcribers():
     with open(FILE_PATH, 'r', encoding='utf-8') as f:
         data = json.load(f)
         return set(data)
+    
+def save_SYsubcribers(user_id_list):
+    FILE_PATH = 'Sah_Yang_Ysubs.json'
+    with open(FILE_PATH, 'w', encoding='utf-8') as f:
+        json.dump(list(user_id_list), f)
+def load_SYsubcribers():
+    FILE_PATH = 'Sah_Yang_Ysubs.json'
+    if not os.path.exists(FILE_PATH):
+        return set()
+    with open(FILE_PATH, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+        return set(data)

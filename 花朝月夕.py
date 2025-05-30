@@ -4,6 +4,9 @@ import asyncio
 import time
 import aiohttp
 import json
+import os
+from googleapiclient.discovery import build
+from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 from urllib.request import urlretrieve
 from discord import app_commands, File
@@ -11,19 +14,22 @@ from discord.ext import commands
 from tabulate import tabulate
 from Sah_Yang_image import save_sah_df_img
 from Sah_Yang_Schedule import Sah_filtered_dataframe
-from 花朝月夕_Token import Token, RToken, SahYang_User, chyeonz_User, leechunhyang_User, ao_o5_User
-from 花朝月夕_Subscribers import save_Ssubcribers, load_Ssubcribers, save_CHsubcribers, load_CHsubcribers, save_cz_subcribers, load_cz_subcribers, save_ao_subcribers, load_ao_subcribers
+from 花朝月夕_Token import Token, RToken, YToken, SahYang_User, chyeonz_User, leechunhyang_User, ao_o5_User, SahYang_Youtube
+from 花朝月夕_Subscribers import save_Ssubcribers, load_Ssubcribers, save_CHsubcribers, load_CHsubcribers, save_cz_subcribers, load_cz_subcribers, save_ao_subcribers, load_ao_subcribers, save_SYsubcribers, load_SYsubcribers
 from 花朝月夕_URL import URL_SahYang, URL_SahYang0, URL_leechunhyang, URL_leechunhyang0, URL_chyeonz_, URL_chyeonz0, URL_ao_05, URL_ao_050, URL_Notion, URL_Notion1
+from 花朝月夕_Youtube import Sah_save_last_video_id, Sah_load_last_video_id
 
 bot = commands.Bot(command_prefix='!', intents=discord.Intents.all())
 headers_lol = {"X-Riot-Token":RToken}
 headers_chzzk = {'User-Agent': 'Mozilla/5.0'}
+youtube = build('youtube', 'v3', developerKey=YToken)
 Ssubscribers_users = set()
 
 SahYang_task_started = False
 leechunhyang_task_started = False
 chyeonz_task_started = False
 ao_o5_task_started = False
+Sah_Yang_new_video_task_started = False
 
 def get_status_message(bot):
     server_count = len(bot.guilds)
@@ -32,7 +38,8 @@ def get_status_message(bot):
         'ao_o5.subs.json',
         'chyeonz_.subs.json',
         'leechunhyang.subs.json',
-        'Sah_Yang_subs.json'
+        'Sah_Yang_subs.json',
+        'Sah_Yang_Ysubs.json'
     ]
 
     user_ids = set()
@@ -52,16 +59,18 @@ async def on_ready():
     await bot.change_presence(status=discord.Status.online)
     status_message = get_status_message(bot)
     await bot.change_presence(activity=discord.CustomActivity(name=status_message))
-    await bot.wait_until_ready()
+#    await bot.wait_until_ready()
     await bot.tree.sync()
     global Ssubscribers_users
     global Csubscribers_users
     global z_subscribers_users
-    global ao_subcribers_users
+    global ao_subscribers_users
+    global SYsubscribers_users
     Ssubscribers_users = load_Ssubcribers()
     Csubscribers_users = load_CHsubcribers()
     z_subscribers_users = load_cz_subcribers()
-    ao_subcribers_users = load_ao_subcribers()
+    ao_subscribers_users = load_ao_subcribers()
+    SYsubscribers_users = load_SYsubcribers()
     print(f'花朝月夕 enabled.')
     global SahYang_task_started
     if not SahYang_task_started:
@@ -79,6 +88,10 @@ async def on_ready():
     if not ao_o5_task_started:
         bot.loop.create_task(checking_ao_o5())
         ao_o5_task_started = True
+    global Sah_Yang_new_video_task_started
+    if not Sah_Yang_new_video_task_started:
+        bot.loop.create_task(Sah_Yang_new_video())
+        Sah_Yang_new_video_task_started = True
 
 @bot.command()
 async def 패치노트(ctx):
@@ -107,22 +120,15 @@ async def slash(interaction: discord.Interaction):
 async def slash1(interaction: discord.Interaction, 닉네임:str, 태그:str):
      URL_puuid = f"https://asia.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{닉네임}/{태그}?api_key={RToken}"
      r = requests.get(URL_puuid,headers=headers_lol)
-#     print(r.text)
      Puuid = (r.json()['puuid'])
-#     print(r.status_code)
      if r.status_code == 200:
          URL_summoner = f"https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/{Puuid}?api_key={RToken}"
          r = requests.get(URL_summoner, headers=headers_lol)
-#         print(r.text)
          Icon = str(r.json()['profileIconId'])
          Level = str(r.json()['summonerLevel'])
-#         print(Icon)
-#         print(Level)
          URL_league = f"https://kr.api.riotgames.com/lol/league/v4/entries/by-puuid/{Puuid}?api_key={RToken}"
          r = requests.get(URL_league, headers=headers_lol)
-#         print(r.text)
          RankS = json.loads(r.text)
-#         print(RankS)
          if len(RankS) == 0:
              await interaction.response.send_message("소환사님의 랭크 정보가 없습니다.")
          for i in RankS:
@@ -133,31 +139,23 @@ async def slash1(interaction: discord.Interaction, 닉네임:str, 태그:str):
                  wins = str(i["wins"])
                  losses = str(i["losses"])
                  ratio = str(round(int(wins)*100/(int(wins)+int(losses)), 1))
-#                 print(rank)
-#                 print(tier)
                  URL_champion = f"https://kr.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-puuid/{Puuid}?api_key={RToken}"
                  r = requests.get(URL_champion, headers=headers_lol)
                  player_mastery = json.loads(r.text)
-#                 print(player_mastery)
                  for i in player_mastery:
                      most_champion_id = int(i["championId"])
                      most_champion_points = str(i["championPoints"])
-                     URL_ddragon1 = f"https://ddragon.leagueoflegends.com/cdn/15.9.1/data/ko_KR/champion.json"
+                     URL_ddragon1 = f"https://ddragon.leagueoflegends.com/cdn/15.10.1/data/ko_KR/champion.json"
                      r = requests.get(URL_ddragon1)
                      champion_name = json.loads(r.text)
-                     #print(champion_name)
                      champion_name_list = champion_name["data"]
-                     #print(type(champion_name_list))
                      global most_champion_name
                      for i in champion_name_list:
                          if(champion_name["data"][i]["key"])==str(most_champion_id):
                              most_champion_name = champion_name["data"][i]["name"]
                              break
-                     #print(most_champion_name)
-                     #print(most_champion_points)
-
                      embed = discord.Embed(title="", description="", color=0xEB459F)
-                     embed.set_author(name=닉네임 +"님의 랭크 정보", url=f"https://lol.ps/summoner/{닉네임}_{태그}?region=kr", icon_url="https://ddragon.leagueoflegends.com/cdn/15.9.1/img/profileicon/"+Icon+".png")
+                     embed.set_author(name=닉네임 +"님의 랭크 정보", url=f"https://lol.ps/summoner/{닉네임}_{태그}?region=kr", icon_url="https://ddragon.leagueoflegends.com/cdn/15.10.1/img/profileicon/"+Icon+".png")
                      embed.add_field(name=tier+" "+rank+" | "+leaguepoints+" LP", value=wins+"승"+" "+losses +"패"+" | "+ratio+"%", inline=False)
                      embed.add_field(name="최고 숙련도",value= most_champion_name +" "+ most_champion_points +" 점", inline=False)
                      embed.set_footer(text='lol.ps')
@@ -220,16 +218,16 @@ async def slash7(interaction: discord.Interaction):
 @bot.tree.command(name="임나은_방송_알림_활성화", description="방송 알림을 메시지로 받아요.")
 async def slash8(interaction: discord.Interaction):
     await interaction.response.defer(ephemeral=True)
-    ao_subcribers_users.add(interaction.user.id)
-    save_ao_subcribers(ao_subcribers_users)
+    ao_subscribers_users.add(interaction.user.id)
+    save_ao_subcribers(ao_subscribers_users)
     await interaction.followup.send("방송 알림을 활성화했습니다.", ephemeral=True)
 
 @bot.tree.command(name="임나은_방송_알림_비활성화", description="방송 알림을 메시지로 받지 않아요.")
 async def slash7(interaction: discord.Interaction):
     await interaction.response.defer(ephemeral=True)
-    if interaction.user.id in ao_subcribers_users:
-        ao_subcribers_users.remove(interaction.user.id)
-        save_ao_subcribers(ao_subcribers_users)
+    if interaction.user.id in ao_subscribers_users:
+        ao_subscribers_users.remove(interaction.user.id)
+        save_ao_subcribers(ao_subscribers_users)
         await interaction.followup.send("방송 알림을 비활성화했습니다.", ephemeral=True)
     else:
         await interaction.followup.send("방송 알림이 활성화되어있지 않습니다.", ephemeral=True)
@@ -238,8 +236,25 @@ async def slash7(interaction: discord.Interaction):
 async def slash8(interaction: discord.Interaction):
     await interaction.response.defer()
     df = Sah_filtered_dataframe()
-    save_sah_df_img(df, filename="2505schedule.png", background_image="1747197564.219887.PNG")
-    await interaction.followup.send(file=File("2505schedule.png"))
+    save_sah_df_img(df, filename="2506schedule.png", background_image="1747197564.219887.PNG")
+    await interaction.followup.send(file=File("2506schedule.png"))
+
+@bot.tree.command(name="금사향_유튜브_알림_활성화", description="유튜브 새 영상 알림을 메시지로 받아요.")
+async def slash9(interaction: discord.Interaction):
+    await interaction.response.defer(ephemeral=True)
+    SYsubscribers_users.add(interaction.user.id)
+    save_SYsubcribers(SYsubscribers_users)
+    await interaction.followup.send("유튜브 새 영상 알림을 활성화했습니다.", ephemeral=True)
+
+@bot.tree.command(name="금사향_유튜브_알림_비활성화", description="유튜브 새 영상 알림을 메시지로 받지 않아요.")
+async def slash10(interaction: discord.Interaction):
+    await interaction.response.defer(ephemeral=True)
+    if interaction.user.id in SYsubscribers_users:
+        SYsubscribers_users.remove(interaction.user.id)
+        save_SYsubcribers(SYsubscribers_users)
+        await interaction.followup.send("유튜브 새 영상 알림을 비활성화했습니다.", ephemeral=True)
+    else:
+        await interaction.followup.send("유튜브 알림이 활성화되어있지 않습니다.", ephemeral=True)
 
 last_check_SahYang = 0
 async def checking_SahYang():
@@ -403,7 +418,7 @@ async def checking_ao_o5():
                             )
                             embed.set_footer(text="花朝月夕")
                             embed.timestamp = discord.utils.utcnow()
-                            for user_id in ao_subcribers_users:
+                            for user_id in ao_subscribers_users:
                                 try:
                                     user_obj = await bot.fetch_user(user_id)
                                     await user_obj.send(embed=embed)
@@ -420,5 +435,49 @@ async def checking_ao_o5():
             except Exception as e:
                 print(f"API 오류: {e}")
             await asyncio.sleep(30)
+
+async def Sah_Yang_new_video():
+    await bot.wait_until_ready()
+    while not bot.is_closed():
+        try:
+            channel_response = youtube.channels().list(
+                part = "contentDetails",
+                id = SahYang_Youtube
+            ).execute()
+            uploads_playlist_id = channel_response["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"]
+            playlist_response = youtube.playlistItems().list(
+                part = "snippet",
+                playlistId = uploads_playlist_id,
+                maxResults = 1
+            ).execute()
+            latest_video = playlist_response["items"][0]["snippet"]
+            video_id = latest_video["resourceId"]["videoId"]
+            title = latest_video["title"]
+            thumbnail = latest_video["thumbnails"]["high"]["url"]
+            published_at = latest_video["publishedAt"]
+            video_url = f"https://www.youtube.com/watch?v={video_id}"
+            last_saved_video_id = Sah_load_last_video_id()           
+            if video_id != last_saved_video_id:
+                Sah_save_last_video_id(video_id)
+                embed = discord.Embed(
+                    title = "금사향님의 새 영상이 업로드되었습니다.",
+                    description=title,
+                    url=video_url,
+                    color=discord.Color.red()
+                )
+                embed.set_image(url=thumbnail)
+                embed.set_footer(text="금사향 유튜브 알림")
+                for user_id in SYsubscribers_users:
+                    try:
+                        user_obj = await bot.fetch_user(user_id)
+                        await user_obj.send(embed=embed)
+                        await asyncio.sleep(1)
+                    except Exception as e:
+                        print(f"{user_id} DM 실패: {e}")
+            else:
+                pass
+        except Exception as e:
+            print(f"[에러 발생] {e}")
+        await asyncio.sleep(300)
 
 bot.run(Token)

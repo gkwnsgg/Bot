@@ -14,29 +14,34 @@ def auto_wrap_text(text, max_line_length=18):
 def wrap_text_in_df(df, max_line_length=18):
     return df.applymap(lambda x: auto_wrap_text(x, max_line_length))
 
-def save_sah_df_img(df, filename="2505.png", background_image="1747197564.219887.PNG"):
+def save_sah_df_img(df, filename="2506.png", background_image="1747197564.219887.PNG"):
     df = wrap_text_in_df(df, max_line_length=18)
+    print(df[['날짜']])
     row_count = len(df) + 1
     row_height = 0.5
     fig_width = 16
-    #fig_height = 4
-    fig_height = row_count * row_height
+    fig_height = max(8, row_count * row_height)
     fig, ax = plt.subplots(figsize=(fig_width, fig_height))
     ax.axis('off')
-    table = ax.table(cellText=df.values, colLabels=df.columns, loc='center', cellLoc='center', colColours=["#d3d3d3"] * df.shape[1])
+    table = ax.table(
+        cellText=df.values,
+        colLabels=df.columns,
+        loc='center',
+        cellLoc='center',
+        colColours=["#d3d3d3"] * df.shape[1]
+    )
     table.auto_set_font_size(False)
     table.set_fontsize(9)
     table.scale(1.2, 0.8)
+
     cell_texts = [df.columns.tolist()] + df.values.tolist()
-    max_line_count_per_row = []
-    for row in cell_texts:
-        max_lines = max(str(cell).count('\n') + 1 if isinstance(cell, str) else 1 for cell in row)
-        max_line_count_per_row.append(max_lines)
+    max_line_count_per_row = [
+        max(str(cell).count('\n') + 1 if isinstance(cell, str) else 1 for cell in row)
+        for row in cell_texts
+    ]
     for (row, col), cell in table.get_celld().items():
         cell.get_text().set_fontproperties(fontprop)
         cell.PAD = 0.01
-        #text = cell.get_text().get_text()
-        #line_count = text.count('\n') + 1
         line_count = max_line_count_per_row[row]
         if row == 0:
             cell.set_height(0.18)
@@ -46,7 +51,7 @@ def save_sah_df_img(df, filename="2505.png", background_image="1747197564.219887
             cell.set_height(base_height + (line_count - 1) * line_height)
     if background_image:
         img = plt.imread(background_image)
-        fig.figimage(img, xo=0, yo=0, alpha=0.15, zorder=1)
-    plt.tight_layout()
+        fig.figimage(img, xo=100, yo=100, alpha=0.2, zorder=1)
+    fig.subplots_adjust(bottom=0.1, top=0.95)
     plt.savefig(filename, dpi=300, bbox_inches='tight')
     plt.close()
