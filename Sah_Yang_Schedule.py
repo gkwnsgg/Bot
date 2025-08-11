@@ -15,7 +15,7 @@ def Sah_filtered_dataframe():
     )
     client = gspread.authorize(credentials)
     sah_spreadsheet = client.open_by_key("1mrlJEDjfNPkJnnQwFdpmli4SySIva2rOzyhvqqD2n6o")
-    sah_worksheet = sah_spreadsheet.worksheet("25/06")
+    sah_worksheet = sah_spreadsheet.worksheet("25/08")
     sah_data = sah_worksheet.get("A1:E50")
     sah_df = pd.DataFrame(sah_data)
     sah_df.replace("", pd.NA, inplace=True)
@@ -23,7 +23,6 @@ def Sah_filtered_dataframe():
     sah_df.dropna(axis=1, how='all', inplace=True)
     sah_df.columns = sah_df.iloc[0]
     sah_df = sah_df[1:].reset_index(drop=True)
-#    sah_df = sah_df[~(sah_df["방송시간"].isna() & sah_df["세부사항"].isna())].copy()
     sah_df = sah_df[~sah_df["컨텐츠"].str.contains("미정|휴방", na=False)].copy()
     sah_df.fillna("시간 미정", inplace=True)
 

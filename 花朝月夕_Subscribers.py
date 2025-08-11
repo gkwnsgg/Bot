@@ -2,11 +2,11 @@ import json
 import os
 
 def save_Ssubcribers(user_id_list):
-    FILE_PATH = 'Sah_Yang_subs.json'
+    FILE_PATH = 'Sah_Yang.subs.json'
     with open(FILE_PATH, 'w', encoding='utf-8') as f:
         json.dump(list(user_id_list), f)
 def load_Ssubcribers():
-    FILE_PATH = 'Sah_Yang_subs.json'
+    FILE_PATH = 'Sah_Yang.subs.json'
     if not os.path.exists(FILE_PATH):
         return set()
     with open(FILE_PATH, 'r', encoding='utf-8') as f:

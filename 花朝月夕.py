@@ -31,6 +31,10 @@ chyeonz_task_started = False
 ao_o5_task_started = False
 Sah_Yang_new_video_task_started = False
 
+def log_error(context, error):
+    with open("sahyang_error.log", "a", encoding="utf-8") as f:
+        f.write(f"[{datetime.now()}] [{context}] {str(error)}\n")
+
 def get_status_message(bot):
     server_count = len(bot.guilds)
 
@@ -38,7 +42,7 @@ def get_status_message(bot):
         'ao_o5.subs.json',
         'chyeonz_.subs.json',
         'leechunhyang.subs.json',
-        'Sah_Yang_subs.json',
+        'Sah_Yang.subs.json',
         'Sah_Yang_Ysubs.json'
     ]
 
@@ -236,8 +240,8 @@ async def slash7(interaction: discord.Interaction):
 async def slash8(interaction: discord.Interaction):
     await interaction.response.defer()
     df = Sah_filtered_dataframe()
-    save_sah_df_img(df, filename="2506schedule.png", background_image="1747197564.219887.PNG")
-    await interaction.followup.send(file=File("2506schedule.png"))
+    save_sah_df_img(df, filename="2508schedule.png", background_image="1747197564.219887.PNG")
+    await interaction.followup.send(file=File("2508schedule.png"))
 
 @bot.tree.command(name="금사향_유튜브_알림_활성화", description="유튜브 새 영상 알림을 메시지로 받아요.")
 async def slash9(interaction: discord.Interaction):
@@ -257,10 +261,22 @@ async def slash10(interaction: discord.Interaction):
         await interaction.followup.send("유튜브 알림이 활성화되어있지 않습니다.", ephemeral=True)
 
 last_check_SahYang = 0
+MAX_CONCURRENT_SENDS = 10
+semaphore = asyncio.Semaphore(MAX_CONCURRENT_SENDS)
+async def send_sahyang_dm(user_id, embed):
+    async with semaphore:
+        try:
+            user_obj = await bot.fetch_user(user_id)
+            await user_obj.send(embed=embed)
+        except Exception as e:
+            error_message = f"{user_id} 금사향 DM 실패: {e}"
+            print(error_message)
+            log_error("send_sahyang_dm", error_message)
 async def checking_SahYang():
     global last_check_SahYang
     await bot.wait_until_ready()
     last_check_SahYang = 0
+
     async with aiohttp.ClientSession(headers=headers_chzzk) as session:
         while not bot.is_closed():
             try:
@@ -268,7 +284,7 @@ async def checking_SahYang():
                     data = await resp.json()
                 content = data.get("content", {})
                 check = 1 if content.get("openLive") else 0
-            
+
                 if check != last_check_SahYang:
                     if check == 1:
                         try:
@@ -281,24 +297,20 @@ async def checking_SahYang():
                                 description=f"**{Title}**\n[방송 보러가기]({live_url})",
                                 color=discord.Color.yellow()
                             )
-                            embed.set_footer(text="花朝月夕")
+                            embed.set_footer(text="ㅇㅇㄴ! ㅇㅇㄴ!")
                             embed.timestamp = discord.utils.utcnow()
-                            for user_id in Ssubscribers_users:
-                                try:
-                                    user_obj = await bot.fetch_user(user_id)
-                                    await user_obj.send(embed=embed)
-                                    await asyncio.sleep(1)
-                                except Exception as e:
-                                    print(f"{user_id} DM 실패: {e}")
+
+                            tasks = [send_sahyang_dm(user_id, embed) for user_id in Ssubscribers_users]
+                            await asyncio.gather(*tasks)
+
                         except Exception as e:
-                            print(f"Embed 오류: {e}")
-                    else:
-                        pass                    
-                    
-                    
+                            log_error("Embed 전송 오류", e)
+
                     last_check_SahYang = check
+
             except Exception as e:
-                print(f"API 오류: {e}")
+                log_error("금사향 API 오류", e)
+
             await asyncio.sleep(30)
 
 last_check_leechunhyang = 0
@@ -334,16 +346,16 @@ async def checking_leechunhyang():
                                     await user_obj.send(embed=embed)
                                     await asyncio.sleep(1)
                                 except Exception as e:
-                                    print(f"{user_id} DM 실패: {e}")
+                                    print(f"{user_id} 이춘향 DM 실패: {e}")
                         except Exception as e:
-                            print(f"Embed 오류: {e}")
+                            print(f"{user_id} 이춘향 Embed 오류: {e}")
                     else:
                         pass                    
                     
                     
                     last_check_leechunhyang = check
             except Exception as e:
-                print(f"API 오류: {e}")
+                print(f"이춘향 API 오류: {e}")
             await asyncio.sleep(30)
 
 last_check_chyeonz_ = 0
@@ -379,16 +391,16 @@ async def checking_chyeonz_():
                                     await user_obj.send(embed=embed)
                                     await asyncio.sleep(1)
                                 except Exception as e:
-                                    print(f"{user_id} DM 실패: {e}")
+                                    print(f"{user_id} 채현찌 DM 실패: {e}")
                         except Exception as e:
-                            print(f"Embed 오류: {e}")
+                            print(f"{user_id} 채현찌 Embed 오류: {e}")
                     else:
                         pass                    
                     
                     
                     last_check_chyeonz_ = check
             except Exception as e:
-                print(f"API 오류: {e}")
+                print(f"채현찌 API 오류: {e}")
             await asyncio.sleep(30)
 
 last_check_ao_o5 = 0
@@ -424,16 +436,16 @@ async def checking_ao_o5():
                                     await user_obj.send(embed=embed)
                                     await asyncio.sleep(1)
                                 except Exception as e:
-                                    print(f"{user_id} DM 실패: {e}")
+                                    print(f"{user_id} 임나은 DM 실패: {e}")
                         except Exception as e:
-                            print(f"Embed 오류: {e}")
+                            print(f"{user_id} 임나은 Embed 오류: {e}")
                     else:
                         pass                    
                     
                     
                     last_check_ao_o5 = check
             except Exception as e:
-                print(f"API 오류: {e}")
+                print(f"임나은 API 오류: {e}")
             await asyncio.sleep(30)
 
 async def Sah_Yang_new_video():
@@ -473,11 +485,11 @@ async def Sah_Yang_new_video():
                         await user_obj.send(embed=embed)
                         await asyncio.sleep(1)
                     except Exception as e:
-                        print(f"{user_id} DM 실패: {e}")
+                        print(f"{user_id} 금사향 유튜브 DM 실패: {e}")
             else:
                 pass
         except Exception as e:
-            print(f"[에러 발생] {e}")
+            print(f"[금사향 에러 발생] {e}")
         await asyncio.sleep(300)
 
 bot.run(Token)
