@@ -63,7 +63,6 @@ async def on_ready():
     await bot.change_presence(status=discord.Status.online)
     status_message = get_status_message(bot)
     await bot.change_presence(activity=discord.CustomActivity(name=status_message))
-#    await bot.wait_until_ready()
     await bot.tree.sync()
     global Ssubscribers_users
     global Csubscribers_users
