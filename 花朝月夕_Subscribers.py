@@ -1,11 +1,11 @@
 import json
 import os
 
-def save_Ssubcribers(user_id_list):
+def save_SahYang_subcribers(user_id_list):
     FILE_PATH = 'Sah_Yang.subs.json'
     with open(FILE_PATH, 'w', encoding='utf-8') as f:
         json.dump(list(user_id_list), f)
-def load_Ssubcribers():
+def load_SahYang_subcribers():
     FILE_PATH = 'Sah_Yang.subs.json'
     if not os.path.exists(FILE_PATH):
         return set()
@@ -50,11 +50,23 @@ def load_ao_subcribers():
         return set(data)
     
 def save_SYsubcribers(user_id_list):
-    FILE_PATH = 'Sah_Yang_Ysubs.json'
+    FILE_PATH = 'Sah_Yang.Ysubs.json'
     with open(FILE_PATH, 'w', encoding='utf-8') as f:
         json.dump(list(user_id_list), f)
 def load_SYsubcribers():
-    FILE_PATH = 'Sah_Yang_Ysubs.json'
+    FILE_PATH = 'Sah_Yang.Ysubs.json'
+    if not os.path.exists(FILE_PATH):
+        return set()
+    with open(FILE_PATH, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+        return set(data)
+
+def save_J1NU_subcribers(user_id_list):
+    FILE_PATH = 'J1NU.subs.json'
+    with open(FILE_PATH, 'w', encoding='utf-8') as f:
+        json.dump(list(user_id_list), f)
+def load_J1NU_subcribers():
+    FILE_PATH = 'J1NU.subs.json'
     if not os.path.exists(FILE_PATH):
         return set()
     with open(FILE_PATH, 'r', encoding='utf-8') as f:
