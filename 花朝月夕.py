@@ -102,6 +102,7 @@ async def 패치노트(ctx):
         title="패치 노트",
         description="[Notion으로 이동합니다.]", url=(URL_Notion),
         color=discord.Color.dark_red()
+        color=discord.Color.blurple()
     )
     await ctx.send(embed=embed)
 
@@ -110,9 +111,91 @@ async def 정보(ctx):
     embed = discord.Embed(
         title="정보",
         description="[Notion으로 이동합니다.]", url=(URL_Notion1),
-        color=discord.Color.dark_red()
+        color=discord.Color.blurple()
     )
     await ctx.send(embed=embed)
+
+@bot.command()
+async def 향티커(ctx):
+    server_id = 1368545248585842708
+    try:
+        guild = bot.get_guild(server_id)
+        if guild is None:
+            embed = discord.Embed(
+                title="오류",
+                description="향티커 서버를 찾을 수 없습니다.",
+                color=discord.Color.blurple()
+            )
+            await ctx.send(embed=embed)
+            return
+        stickers = guild.stickers
+        if not stickers:
+            embed = discord.Embed(
+                title="스티커가 없습니다.",
+                description=f"**{guild.name}** 서버에는 커스텀 스티커가 없습니다.",
+                color=discord.Color.blurple()
+            )
+            await ctx.send(embed=embed)
+            return
+        embed = discord.Embed(
+            title=f"{guild.name} 스티커 리스트",
+            description=f"총 **{len(stickers)}개**의 커스텀 스티커가 있습니다.",
+            color=discord.Color.blurple,
+        )
+        if guild.icon:
+            embed.set_thumbnail(url=guild.icon.url)
+        sticker_list = []
+        for i, sticker in enumerate(stickers, 1):
+            if hasattr(sticker, 'format_type'):
+                if sticker.format_type == discord.StickerFormatType.png:
+                    format_icon = "🎆"
+                elif sticker.format_type == discord.StickerFormatType.apng:
+                    format_icon = "🎬"
+                elif sticker.format_type == discord.StickerFormatType.lottie:
+                    format_icon = "✨"
+                else:
+                    format_icon = "📄"
+            else:
+                format_icon = "📄"
+            description_text = ""
+            if hasattr(sticker, 'description') and sticker.description:
+                description_text = f" -{sticker.description}"
+            sticker_info = f"{format_icon} **{sticker.name}**{description_text}"
+            sticker_list.append(sticker_info)
+        if len(sticker_list) <= 15:
+            embed.add_field(
+                name="스티커 목록",
+                value="\n".join(sticker_list),
+                inline=False
+            )
+        else:
+            for i in range(0, len(sticker_list), 15):
+                page_stickers = sticker_list[i:i+15]
+                page_num = (i // 15) + 1
+                embed.add_field(
+                    name=f"스티커 목록 - 페이지 {page_num}",
+                    value="\n".join(page_stickers),
+                    inline=False
+                )
+        embed.set_footer(
+            text=f"요청자: {ctx.author.display_name}",
+            icon_url=ctx.author.avatar.url if ctx.author.avatar else None
+        )
+        await ctx.send(embed=embed)
+    except discord.Forbidden:
+        embed = discord.Embed(
+            title="권한 부족",
+            description="향티커 서버의 권한이 부여되지 않았습니다.",
+            color=discord.Color.blurple()
+        )
+        await ctx.send(embed=embed)
+    except Exception as e:
+        embed = discord.Embed(
+            title="오류 발생",
+            description=f"예상치 못한 오류가 발생되었습니다:\n```{str(e)}```",
+            color=discord.Color.blurple()
+        )
+        await ctx.send(embed=embed)
 
 @bot.tree.command(name="채널", description="전용 채팅 채널을 생성합니다.")
 async def slash(interaction: discord.Interaction):
