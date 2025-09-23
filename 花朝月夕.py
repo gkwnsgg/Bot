@@ -101,7 +101,6 @@ async def 패치노트(ctx):
     embed = discord.Embed(
         title="패치 노트",
         description="[Notion으로 이동합니다.]", url=(URL_Notion),
-        color=discord.Color.dark_red()
         color=discord.Color.blurple()
     )
     await ctx.send(embed=embed)
