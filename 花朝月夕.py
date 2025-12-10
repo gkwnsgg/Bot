@@ -428,8 +428,8 @@ async def slash11(interaction: discord.Interaction):
 async def slash12(interaction: discord.Interaction):
     await interaction.response.defer()
     df = Sah_filtered_dataframe()
-    save_sah_df_img(df, filename="2509schedule.png", background_image="1747197564.219887.PNG")
-    await interaction.followup.send(file=File("2509schedule.png"))
+    save_sah_df_img(df, filename="2512schedule.png", background_image="1747197564.219887.PNG")
+    await interaction.followup.send(file=File("2512schedule.png"))
 
 @bot.tree.command(name="금사향_유튜브_알림_활성화", description="유튜브 새 영상 알림을 메시지로 받아요.")
 async def slash13(interaction: discord.Interaction):
@@ -524,7 +524,7 @@ async def checking_J1NU():
                                 description=f"**{Title}**\n[방송 보러가기]({live_url})",
                                 color=0x654321
                             )
-                            embed.set_footer(text="김진우")
+                            embed.set_footer(text="김진우 방송알림")
                             embed.timestamp = discord.utils.utcnow()
                             for user_id in J1NU_subscribers_users:
                                 try:
@@ -568,7 +568,7 @@ async def checking_leechunhyang():
                                 description=f"**{Title}**\n[방송 보러가기]({live_url})",
                                 color=discord.Color.pink()
                             )
-                            embed.set_footer(text="이춘향")
+                            embed.set_footer(text="이춘향 방송알림")
                             embed.timestamp = discord.utils.utcnow()
                             for user_id in Csubscribers_users:
                                 try:
@@ -613,7 +613,7 @@ async def checking_chyeonz_():
                                 description=f"**{Title}**\n[방송 보러가기]({live_url})",
                                 color=discord.Color.purple()
                             )
-                            embed.set_footer(text="채현찌")
+                            embed.set_footer(text="채현찌 방송알림")
                             embed.timestamp = discord.utils.utcnow()
                             for user_id in z_subscribers_users:
                                 try:
@@ -658,7 +658,7 @@ async def checking_ao_o5():
                                 description=f"**{Title}**\n[방송 보러가기]({live_url})",
                                 color=0xFFC3C2
                             )
-                            embed.set_footer(text="임나은")
+                            embed.set_footer(text="임나은 방송알림")
                             embed.timestamp = discord.utils.utcnow()
                             for user_id in ao_subscribers_users:
                                 try:
