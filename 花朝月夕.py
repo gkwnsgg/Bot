@@ -5,6 +5,9 @@ import time
 import aiohttp
 import json
 import os
+import chat_exporter
+import io
+import string
 from googleapiclient.discovery import build
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
@@ -14,7 +17,7 @@ from discord.ext import commands, tasks
 from tabulate import tabulate
 from Sah_Yang_image import save_sah_df_img
 from Sah_Yang_Schedule import Sah_filtered_dataframe
-from 花朝月夕_Token import Token, RToken, YToken, SahYang_User, chyeonz_User, leechunhyang_User, ao_o5_User, J1NU_User, SahYang_Youtube
+from 花朝月夕_Token import Token, RToken, YToken, SahYang_User, chyeonz_User, leechunhyang_User, ao_o5_User, J1NU_User, SahYang_Youtube, LOG_CHANNEL_ID, TICKET_CATEGORY_ID
 from 花朝月夕_Subscribers import save_SahYang_subcribers, load_SahYang_subcribers, save_CHsubcribers, load_CHsubcribers, save_cz_subcribers, load_cz_subcribers, save_ao_subcribers, load_ao_subcribers, save_SYsubcribers, load_SYsubcribers, load_J1NU_subcribers, save_J1NU_subcribers
 from 花朝月夕_URL import URL_SahYang, URL_SahYang0, URL_leechunhyang, URL_leechunhyang0, URL_chyeonz_, URL_chyeonz0, URL_ao_05, URL_ao_050, URL_J1NU, URL_J1NU0, URL_Notion, URL_Notion1
 from 花朝月夕_Youtube import Sah_save_last_video_id, Sah_load_last_video_id
@@ -32,6 +35,70 @@ ao_o5_task_started = False
 J1NU_task_started = False
 Sah_Yang_new_video_task_started = False
 
+class TicketControl_view(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+        @discord.ui.button(label="문의 종료 및 저장", style=discord.ButtonStyle.red, custom_id="close_ticket")
+        async def close_ticket(self, interaction: discord.Interaction, button: discord.ui.Button):
+            await interaction.response.send_message("대화 내용을 저장하고 채널을 폐쇠합니다. . .", ephemeral=True)
+            transcript = await chat_exporter.export(interaction.channel)
+            if transcript is None:
+                await interaction.followup.send("대화 내용이 없어 저장할 수 없습니다.", ephemeral=True)
+                return
+            transcript_file = discord.File(io.BytesIO(transcript.encode()), filename=f"transcript-{interaction.channel.name}.html")
+            log_channel = interaction.guild.get_channel(LOG_CHANNEL_ID)
+            if log_channel:
+                embed = discord.Embed(title="문의 종료 로그", color=discord.Color.purple())  
+                embed.add_field(name="채널명", value=interaction.channel.name)
+                embed.add_field(name="종료자", value=interaction.user.mention)
+                embed.timestamp = discord.utils.utcnow()
+                await log_channel.send(embed=embed, file=transcript_file)
+            await interaction.channel.delete()
+
+class TicketLauncher(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+    @discord.ui.button(label="문의하기 / 버그 제보", style=discord.ButtonStyle.primary, emoji="📩", custom_id="create_ticket")
+    async def create_ticket(self, interaction: discord.Integration, button: discord.ui.button):
+        guild = interaction.guild
+        category = guild.get_channel(TICKET_CATEGORY_ID)
+        base_name = str(interaction.user.id)
+        target_name = base_name
+        existing_channles = [c.name for c in guild.text_channels]
+        if target_name in existing_channles:
+            found = False
+            for char in string.ascii_uppercase:
+                temp_name = f"{base_name}_{chr}"
+                if temp_name not in existing_channles:
+                    target_name = temp_name
+                    found = True
+                    break
+            if not found:
+                await interaction.response.send_message("진행 중인 문의가 너무 많습니다. 기존 문의를 종료해주세요.", ephemeral=True)
+                return
+        overwrites = {
+            guild.default_role: discord.PermissionOverwrite(read_messages=False),
+            interaction.user: discord.PermissionOverwrite(read_messages=True, send_messages=True),
+            guild.me: discord.PermissionOverwrite(read_messages=True, send_messages=True)
+        }
+        try:
+            ticket_channel = await guild.create_text_channel(
+                name=target_name,
+                category=category,
+                overwrites=overwrites,
+                topic=f"{interaction.user.name}님의 문의 채널입니다."
+            )
+            await interaction.response.send_message(f"상담 채널이 생성되었습니다: {ticket_channel.mention}", ephemeral=True)
+            embed = discord.Embed(
+                title=f"{interaction.user.display_name}님의 문의",
+                description="문의하실 내용을 남겨주세요. 담당자가 곧 확인합니다. \n대화가 끝나면 아래 버튼을 눌러주세요.",
+                color=discord.Color.green()
+            )
+            await ticket_channel.send(content=interaction.user.mention, embed=embed, view=TicketControl_view())
+        except Exception as e:
+            await interaction.response.send_message(f"채널 생성 중 오류가 발생했습니다.: {e}", ephemeral=True)
+
+
 def log_error(context, error):
     with open("sahyang_error.log", "a", encoding="utf-8") as f:
         f.write(f"[{datetime.now()}] [{context}] {str(error)}\n")
@@ -39,26 +106,6 @@ def log_error(context, error):
 def get_status_message(bot):
     server_count = len(bot.guilds)
     total_members = sum(guild.member_count for guild in bot.guilds)
-
-    #subs_files = [
-    #    'ao_o5.subs.json',
-    #    'chyeonz_.subs.json',
-    #    'leechunhyang.subs.json',
-    #    'Sah_Yang.subs.json',
-    #    'Sah_Yang.Ysubs.json',
-    #    'J1NU.subs.json'
-    #]
-
-    #user_ids = set()
-    #for file_name in subs_files:
-    #    try:
-    #        with open(file_name, 'r', encoding='utf-8') as f:
-    #            data = json.load(f)
-    #            user_ids.update(data)
-    #    except Exception as e:
-    #        print(f"{file_name} 읽기 중 오류 발생: {e}")
-
-    #user_count = len(user_ids)
     return f"{server_count}개의 서버에서 {total_members}명의 유저가 사용중"
 
 @tasks.loop(minutes=1)
@@ -139,6 +186,8 @@ async def on_ready():
     if not rate_limit_monitor.is_running():
         rate_limit_monitor.start()
         print("Rate Limit 모니터링 시작")
+    bot.add_view(TicketLauncher())
+    bot.add_view(TicketControl_view())
     global SahYang_subscribers_users, SYsubscribers_users, J1NU_subscribers_users
     global Csubscribers_users, ao_subscribers_users, z_subscribers_users
     try:
@@ -186,14 +235,15 @@ async def 패치노트(ctx):
     )
     await ctx.send(embed=embed)
 
-#@bot.command()
-#async def 향티커(ctx):
-#    embed = discord.Embed(
-#        title="향티커",
-#        description="[디스코드 향티커 서버 링크입니다.]", url=(URL_SahYang2),
-#        color=discord.Color.yellow()
-#    )
-#    await ctx.send(embed=embed)
+@bot.command()
+@commands.has_permissions(administrator=True)
+async def 티켓생성(ctx):
+    embed = discord.Embed(
+        title="문의하기 / 버그 제보",
+        description="문의사항이나 버그 제보가 있다면 아래 버튼을 눌러주세요.\n관리자와의 1:1 비공개 채널이 생성됩니다.",
+        color=discord.Color.purple()
+    )
+    await ctx.send(embed=embed, view=TicketLauncher())
 
 @bot.command()
 async def 향티커(ctx):
