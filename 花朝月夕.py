@@ -485,18 +485,13 @@ async def checking_SahYang():
                             )
                             embed.set_footer(text="금사향 방송알림")
                             embed.timestamp = discord.utils.utcnow()
-
                             tasks = [send_SahYang_dm(user_id, embed) for user_id in SahYang_subscribers_users]
                             await asyncio.gather(*tasks)
-
                         except Exception as e:
                             log_error("Embed 전송 오류", e)
-
                     last_check_SahYang = check
-
             except Exception as e:
                 log_error("금사향 API 오류", e)
-
             await asyncio.sleep(30)
 
 last_check_J1NU = 0
@@ -536,7 +531,6 @@ async def checking_J1NU():
                             print(f"{user_id} 지누 Embed 오류: {e}")
                     else:
                         pass                                        
-
                     last_check_J1NU = check
             except Exception as e:
                 print(f"지누 API 오류: {e}")
@@ -554,7 +548,6 @@ async def checking_leechunhyang():
                     data = await resp.json()
                 content = data.get("content", {})
                 check = 1 if content.get("openLive") else 0
-            
                 if check != last_check_leechunhyang:
                     if check == 1:
                         try:
@@ -580,8 +573,6 @@ async def checking_leechunhyang():
                             print(f"{user_id} 이춘향 Embed 오류: {e}")
                     else:
                         pass                    
-                    
-                    
                     last_check_leechunhyang = check
             except Exception as e:
                 print(f"이춘향 API 오류: {e}")
@@ -599,7 +590,6 @@ async def checking_chyeonz_():
                     data = await resp.json()
                 content = data.get("content", {})
                 check = 1 if content.get("openLive") else 0
-            
                 if check != last_check_chyeonz_:
                     if check == 1:
                         try:
@@ -625,8 +615,6 @@ async def checking_chyeonz_():
                             print(f"{user_id} 채현찌 Embed 오류: {e}")
                     else:
                         pass                    
-                    
-                    
                     last_check_chyeonz_ = check
             except Exception as e:
                 print(f"채현찌 API 오류: {e}")
@@ -670,8 +658,6 @@ async def checking_ao_o5():
                             print(f"{user_id} 임나은 Embed 오류: {e}")
                     else:
                         pass                    
-                    
-                    
                     last_check_ao_o5 = check
             except Exception as e:
                 print(f"임나은 API 오류: {e}")
@@ -720,5 +706,4 @@ async def Sah_Yang_new_video():
         except Exception as e:
             print(f"[금사향 에러 발생] {e}")
         await asyncio.sleep(300)
-
 bot.run(Token)
