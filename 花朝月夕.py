@@ -511,7 +511,6 @@ async def checking_J1NU():
                     data = await resp.json()
                 content = data.get("content", {})
                 check = 1 if content.get("openLive") else 0
-            
                 if check != last_check_J1NU:
                     if check == 1:
                         try:
