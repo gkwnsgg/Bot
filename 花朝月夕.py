@@ -17,6 +17,7 @@ from discord.ext import commands, tasks
 from tabulate import tabulate
 from Sah_Yang_image import save_sah_df_img
 from Sah_Yang_Schedule import Sah_filtered_dataframe
+from 花朝月夕_Text import BUG_TEMPLATE, CS_TEMPLATE
 from 花朝月夕_Token import Token, RToken, YToken, SahYang_User, chyeonz_User, leechunhyang_User, ao_o5_User, J1NU_User, SahYang_Youtube, LOG_CHANNEL_ID, TICKET_CATEGORY_ID
 from 花朝月夕_Subscribers import save_SahYang_subcribers, load_SahYang_subcribers, save_CHsubcribers, load_CHsubcribers, save_cz_subcribers, load_cz_subcribers, save_ao_subcribers, load_ao_subcribers, save_SYsubcribers, load_SYsubcribers, load_J1NU_subcribers, save_J1NU_subcribers
 from 花朝月夕_URL import URL_SahYang, URL_SahYang0, URL_leechunhyang, URL_leechunhyang0, URL_chyeonz_, URL_chyeonz0, URL_ao_05, URL_ao_050, URL_J1NU, URL_J1NU0, URL_Notion, URL_Notion1
@@ -35,17 +36,18 @@ ao_o5_task_started = False
 J1NU_task_started = False
 Sah_Yang_new_video_task_started = False
 
-class TicketControl_view(discord.ui.View):
+class TicketControlview(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
-        @discord.ui.button(label="문의 종료 및 저장", style=discord.ButtonStyle.red, custom_id="close_ticket")
-        async def close_ticket(self, interaction: discord.Interaction, button: discord.ui.Button):
-            await interaction.response.send_message("대화 내용을 저장하고 채널을 폐쇠합니다. . .", ephemeral=True)
-            transcript = await chat_exporter.export(interaction.channel)
-            if transcript is None:
-                await interaction.followup.send("대화 내용이 없어 저장할 수 없습니다.", ephemeral=True)
-                return
-            transcript_file = discord.File(io.BytesIO(transcript.encode()), filename=f"transcript-{interaction.channel.name}.html")
+    @discord.ui.button(label="문의 종료 및 저장", style=discord.ButtonStyle.red, custom_id="close_ticket")
+    async def close_ticket(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_message("대화 내용을 저장하고 채널을 폐쇄합니다.", ephemeral=True)
+        transcript = await chat_exporter.export(interaction.channel)
+        if transcript:
+            transcript_file = discord.File(
+                io.BytesIO(transcript.encode()),
+                filename=f"transcript-{interaction.channel.name}.html"
+            )
             log_channel = interaction.guild.get_channel(LOG_CHANNEL_ID)
             if log_channel:
                 embed = discord.Embed(title="문의 종료 로그", color=discord.Color.purple())  
@@ -53,23 +55,22 @@ class TicketControl_view(discord.ui.View):
                 embed.add_field(name="종료자", value=interaction.user.mention)
                 embed.timestamp = discord.utils.utcnow()
                 await log_channel.send(embed=embed, file=transcript_file)
-            await interaction.channel.delete()
+        await interaction.channel.delete()
 
 class TicketLauncher(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
-    @discord.ui.button(label="문의하기 / 버그 제보", style=discord.ButtonStyle.primary, emoji="📩", custom_id="create_ticket")
-    async def create_ticket(self, interaction: discord.Integration, button: discord.ui.button):
+    async def create_channel(self, interaction: discord.Interaction, prefix: str, template: str, color: discord.Color):
         guild = interaction.guild
         category = guild.get_channel(TICKET_CATEGORY_ID)
-        base_name = str(interaction.user.id)
+        base_name = f"{prefix}-{interaction.user.id}"
         target_name = base_name
-        existing_channles = [c.name for c in guild.text_channels]
-        if target_name in existing_channles:
+        existing_channels = [c.name for c in guild.text_channels]
+        if target_name in existing_channels:
             found = False
-            for char in string.ascii_uppercase:
-                temp_name = f"{base_name}_{chr}"
-                if temp_name not in existing_channles:
+            for char in string.ascii_lowercase:
+                temp_name = f"{base_name}-{char}"
+                if temp_name not in existing_channels:
                     target_name = temp_name
                     found = True
                     break
@@ -82,22 +83,39 @@ class TicketLauncher(discord.ui.View):
             guild.me: discord.PermissionOverwrite(read_messages=True, send_messages=True)
         }
         try:
-            ticket_channel = await guild.create_text_channel(
+            channel = await guild.create_text_channel(
                 name=target_name,
                 category=category,
                 overwrites=overwrites,
-                topic=f"{interaction.user.name}님의 문의 채널입니다."
+                topic=f"{interaction.user.name}님의 {prefix} 채널입니다."
             )
-            await interaction.response.send_message(f"상담 채널이 생성되었습니다: {ticket_channel.mention}", ephemeral=True)
+            await interaction.response.send_message(f"채널이 생성되었습니다: {channel.mention}", ephemeral=True)
             embed = discord.Embed(
-                title=f"{interaction.user.display_name}님의 문의",
-                description="문의하실 내용을 남겨주세요. 담당자가 곧 확인합니다. \n대화가 끝나면 아래 버튼을 눌러주세요.",
-                color=discord.Color.green()
+                title=f"{interaction.user.display_name}님의 {prefix} 문의",
+                description=template + "\n\n대화가 끝나면 아래 버튼을 눌러주세요.",
+                color=discord.Color.purple()
             )
-            await ticket_channel.send(content=interaction.user.mention, embed=embed, view=TicketControl_view())
+            await channel.send(content=interaction.user.mention, embed=embed, view=TicketControlview())
         except Exception as e:
             await interaction.response.send_message(f"채널 생성 중 오류가 발생했습니다.: {e}", ephemeral=True)
 
+    @discord.ui.button(label="문의하기", style=discord.ButtonStyle.primary, custom_id="ticket_inquiry")
+    async def inquiry_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await self.create_channel(
+            interaction,
+            prefix="CS",
+            template=CS_TEMPLATE,
+            color=discord.Color.purple()
+        )
+    
+    @discord.ui.button(label="버그 제보", style=discord.ButtonStyle.danger, custom_id="ticket_bug")
+    async def bug_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await self.create_channel(
+            interaction,
+            prefix="BUG",
+            template=BUG_TEMPLATE,
+            color=discord.Color.red()
+        )
 
 def log_error(context, error):
     with open("sahyang_error.log", "a", encoding="utf-8") as f:
@@ -185,9 +203,10 @@ async def on_ready():
     await bot.tree.sync()
     if not rate_limit_monitor.is_running():
         rate_limit_monitor.start()
-        print("Rate Limit 모니터링 시작")
+        print("RateLimit_모니터링_시작")
     bot.add_view(TicketLauncher())
-    bot.add_view(TicketControl_view())
+    bot.add_view(TicketControlview())
+    print(f"CS_활성화")
     global SahYang_subscribers_users, SYsubscribers_users, J1NU_subscribers_users
     global Csubscribers_users, ao_subscribers_users, z_subscribers_users
     try:
@@ -197,10 +216,10 @@ async def on_ready():
         ao_subscribers_users = load_ao_subcribers()
         J1NU_subscribers_users = load_J1NU_subcribers()
         SYsubscribers_users = load_SYsubcribers()
-        print("방송 알림 데이터 로딩 완료")
+        print("방송_알림_데이터_로딩_완료")
     except Exception as e:
-        print(f"방송 알림 데이터 로딩 오류: {e}")
-    print('봇 활성화')
+        print(f"방송_알림_데이터_로딩_오류: {e}")
+    print('봇_활성화')
     global SahYang_task_started
     if not SahYang_task_started:
         bot.loop.create_task(checking_SahYang())
@@ -237,12 +256,16 @@ async def 패치노트(ctx):
 
 @bot.command()
 @commands.has_permissions(administrator=True)
-async def 티켓생성(ctx):
+async def CS(ctx):
+    await ctx.message.delete()
     embed = discord.Embed(
         title="문의하기 / 버그 제보",
-        description="문의사항이나 버그 제보가 있다면 아래 버튼을 눌러주세요.\n관리자와의 1:1 비공개 채널이 생성됩니다.",
+        description="필요한 문의를 선택해 주세요.\n관리자와의 1:1 비공개 채널이 생성됩니다.",
         color=discord.Color.purple()
     )
+    embed.add_field(name="문의하기", value="[버그 제보를 제외한 모든 문의]", inline=True)
+    embed.add_field(name="버그 제보", value="[봇이나 서버 이용등의 버그 문의]", inline=True)
+    embed.set_footer(text="버튼을 한 번만 클릭하고 잠시 기다려주세요.")
     await ctx.send(embed=embed, view=TicketLauncher())
 
 @bot.command()
