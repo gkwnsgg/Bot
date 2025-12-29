@@ -14,7 +14,7 @@ def auto_wrap_text(text, max_line_length=18):
 def wrap_text_in_df(df, max_line_length=18):
     return df.applymap(lambda x: auto_wrap_text(x, max_line_length))
 
-def save_sah_df_img(df, filename="2509.png", background_image="1747197564.219887.PNG"):
+def save_sah_df_img(df, filename="2512.png", background_image="1747197564.219887.PNG"):
     df = wrap_text_in_df(df, max_line_length=18)
     print(df[['날짜']])
     row_count = len(df) + 1
